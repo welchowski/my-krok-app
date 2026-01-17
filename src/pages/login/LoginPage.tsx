@@ -1,5 +1,4 @@
 // src/pages/HomePage.tsx
-import React from 'react';
 import './LoginPage.css';  // твої стилі залишаються
 
 export default function LoginPage() {

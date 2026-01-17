@@ -1,18 +1,13 @@
 import { useState } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom'; // Outlet для динамічного контенту
-import { supabase } from '../../lib/supabaseClient'; // для логауту, якщо треба
+import { Outlet } from 'react-router-dom'; // Outlet для динамічного контенту
 import './dashboard.css';
 import { useAuth } from '../..//hooks/useAuth';
 import { NavLink } from 'react-router-dom';
 export default function Dashboard() {
   useAuth({ requireAuth: true });
-  const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(true); // можна зробити toggler для мобілки
+  const [sidebarOpen] = useState(true); // можна зробити toggler для мобілки
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/'); // назад на головну після логауту
-  };
+ 
 
   return (
     <div className="module flex h-screen bg-gray-100 container tailwind css-myl2ny css-exq74d min-h-screen ">

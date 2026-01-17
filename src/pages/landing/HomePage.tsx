@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import React, { useState } from 'react';
+import  { useState } from 'react';
 
 import './home-page.css';  // твої стилі залишаються
 import AuthModal from '../../components/AuthModal';

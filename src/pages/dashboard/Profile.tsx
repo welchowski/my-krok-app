@@ -227,7 +227,7 @@ export default function Profile() {
       onChange={(e) =>
         setFormData({
           ...formData,
-          krok_type_id: e.target.value ? Number(e.target.value) : null,
+          krok_type_id: e.target.value ? e.target.value : null,
         })
       }
       className="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500"

@@ -1,5 +1,4 @@
-// src/components/LoginModal.tsx
-import React from 'react';
+
 
 interface LoginModalProps {
   isOpen: boolean;
