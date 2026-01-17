@@ -21,7 +21,7 @@ export function useAuth({ requireAuth = true } = {}) {
     // Слухаємо зміни стану автентифікації (логін/логаут)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (requireAuth && !session) {
-        navigate('/login');
+        navigate('/');
       } else if (!requireAuth && session) {
         navigate('/dashboard');
       }
