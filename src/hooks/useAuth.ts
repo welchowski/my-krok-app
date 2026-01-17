@@ -12,7 +12,7 @@ export function useAuth({ requireAuth = true } = {}) {
         console.error('Помилка перевірки сесії:', error);
       }
       if (requireAuth && !session) {
-        navigate('/login'); // перенаправлення, якщо не залогінений
+        navigate('/'); // перенаправлення, якщо не залогінений
       } else if (!requireAuth && session) {
         navigate('/dashboard'); // якщо залогінений, але на публічній сторінці — на дашборд
       }
