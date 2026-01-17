@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import './LoginPage.css';  // твої стилі залишаються
+import './loginPage.css';  // твої стилі залишаються
 
 export default function LoginPage() {
   
