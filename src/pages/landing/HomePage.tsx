@@ -159,7 +159,7 @@ export default function HomePage() {
                         </div>
                         <div className="flex flex-col sm:flex-row gap-4">
                           <input className="flex-1 px-6 py-4 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/50 backdrop-blur-sm" placeholder="Ваш email" type="email" />
-                          <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
+                          <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group" onClick={() => openAuth('login')}>
                             Спробувати
                             безкоштовно
                             <svg className="lucide lucide-arrow-right w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
