@@ -1,0 +1,20 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фіолетовий градієнтний фон з заокругленими кутами -->
+  <rect width="56" height="56" rx="12" fill="url(#gradient-purple)"/>
+
+  <!-- Градієнт purple-500 → purple-600 -->
+  <defs>
+    <linearGradient id="gradient-purple" x1="0" y1="0" x2="56" y2="56">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Біла іконка smile по центру -->
+  <g transform="translate(14,14)">
+    <circle cx="14" cy="14" r="14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M10 20s2.828 4 8 4 8-4 8-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="13" y1="13" x2="13.01" y2="13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="19" y1="13" x2="19.01" y2="13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
