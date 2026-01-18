@@ -272,7 +272,7 @@ export default function Profile() {
               <div className="flex gap-4">
                 <button
                   onClick={handleSave}
-                  className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition"
+                  className="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition"
                 >
                   Зберегти
                 </button>

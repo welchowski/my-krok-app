@@ -8,6 +8,8 @@ import Static from './pages/dashboard/Static';
 import Card from './pages/dashboard//Card';
 import FlashCard from './components/FlashCard';
 import Tests from './pages/dashboard/Tests';
+import TestRun from './components/TestRun';
+import FlashRun from './components/FlashRun';
 
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
           <Route path="module" element={<Module />} />
           <Route path="tests" element={<Tests />} />
           <Route path="flash" element={<Card />} />
+          <Route path="tests/run" element={<TestRun />} />
+          <Route path="flash/run" element={<FlashRun />} />
         </Route>
 
       </Routes>
