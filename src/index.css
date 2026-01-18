@@ -1,0 +1,85 @@
+/* Тільки для мобілки (екрани < 640px) */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px; /* менший базовий текст */
+  }
+
+  /* Заголовки */
+  h1, h2, h3 {
+    font-size: 1.25rem; /* ~20px */
+  }
+
+  /* Текст і параграфи */
+  p, li, span, div {
+    font-size: 0.875rem; /* ~14px */
+  }
+
+  /* Відступи зменшуємо */
+  .p-8 { padding: 1.5rem; }
+  .px-6 { padding-left: 1rem; padding-right: 1rem; }
+  .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+
+  /* Контейнери на всю ширину */
+  .max-w-5xl { max-width: 100%; }
+  .w-full { width: 100%; }
+
+  /* Зображення не вилазять за екран */
+  img {
+    max-height: 40vh;
+    width: auto;
+    margin: 0 auto;
+  }
+
+  /* Кнопки стають вертикальними і компактнішими */
+  .flex-wrap {
+    flex-direction: column !important;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Прогрес-бар і навігація */
+  .w-1\/3 { width: 50%; }
+  .gap-6 { gap: 1rem; }
+
+  /* Висота картки — адаптивна */
+  .h-\[520px\], .min-h-\[520px\] {
+    min-height: 60vh;
+  }
+}
+@media (max-width: 640px) {
+  /* На мобілці робимо панель вузькою, або ховаємо її зліва */
+  .w-64 {
+    width: 80vw !important;           /* займає ~80% екрану, щоб не було на весь */
+    max-width: 320px;                 /* максимум 320px, щоб не було дуже широкою */
+  }
+
+  /* Якщо це сайдбар, який ховається — робимо його виїжджаючим */
+  .translate-x-0 {
+    transform: translateX(-100%) !important; /* ховаємо за екраном зліва */
+  }
+
+  /* Коли панель відкрита (додай клас .open або .active, коли вона видима) */
+  .translate-x-0.open {
+    transform: translateX(0) !important; /* виїжджає при відкритті */
+  }
+
+  /* Тінь і закруглення — робимо м'якшими для мобілки */
+  .shadow-md {
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .rounded-none {
+    border-radius: 0 1.5rem 1.5rem 0 !important; /* гарне закруглення справа */
+  }
+}
+
+@media (max-width: 767px) {
+  aside {
+    width: 85vw !important;
+    max-width: 340px;
+  }
+}
