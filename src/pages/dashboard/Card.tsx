@@ -10,36 +10,43 @@ export default function CardSelection() {
   const [userKrokType, setUserKrokType] = useState<string | null>(null);
 
 
-  useEffect(() => {
-    (async () => {
-      // 1. Отримуємо тип КРОКу користувача
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return setLoading(false);
+ useEffect(() => {
+  let mounted = true;
 
-      const { data: profile } = await supabase
+  (async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !mounted) return;
+
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select(`*,
-      krok_types!krok_type_id ( name )
-  `)
+        .select('*, krok_types!krok_type_id (name)')
         .eq('id', user.id)
         .single();
 
-      const userKrokType = profile?.krok_types?.name?.trim() || null;
-      const krokType = profile?.krok_types?.name?.trim() || null;
-      setUserKrokType(krokType); 
+      if (profileError) throw profileError;
 
-      // 2. Завантажуємо питання тільки для цього типу
-      const query = supabase
+      const krokType = profile?.krok_types?.name?.trim() ?? null;
+      if (mounted) setUserKrokType(krokType);
+
+      // Завантаження питань
+      let query = supabase
         .from('krok_tests')
         .select('module_name, discipline')
-        .not('module_name', 'is', null)
-        .not('discipline', 'is', null);
+        .neq('module_name', null)
+        .neq('discipline', null);
 
-      if (userKrokType) query.eq('krok_type', userKrokType);
+      if (krokType) {
+        query = query.eq('krok_type', krokType);
+      }
 
-      const { data } = await query;
+      const { data, error } = await query;
+      if (error) throw error;
 
-      if (!data?.length) return setLoading(false);
+      if (!data?.length) {
+        if (mounted) setLoading(false);
+        return;
+      }
 
       const map = new Map<string, Set<string>>();
       data.forEach(r => {
@@ -47,16 +54,25 @@ export default function CardSelection() {
         map.get(r.module_name)!.add(r.discipline);
       });
 
-      setGroups(
-        Array.from(map, ([title, discs]) => ({
-          title,
-          disciplines: [...discs].sort(),
-        }))
-      );
+      if (mounted) {
+        setGroups(
+          Array.from(map, ([title, discs]) => ({
+            title,
+            disciplines: [...discs].sort(),
+          }))
+        );
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Помилка завантаження даних:', err);
+      if (mounted) setLoading(false);
+    }
+  })();
 
-      setLoading(false);
-    })();
-  }, []);
+  return () => {
+    mounted = false;
+  };
+}, []);
 
   const toggle = (v: string, c: boolean) =>
     setSelected(s => {
