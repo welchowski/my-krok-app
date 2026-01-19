@@ -203,11 +203,12 @@
 
 
 @media (max-width: 767px) {
-  aside {
-    width: 85vw !important;
-    max-width: 320px;
-  }
+    aside {
+        width: 85vw !important;
+        max-width: 320px;
+    }
 }
+
 @layer base {
     @supports (not ((-webkit-appearance:-apple-pay-button))) or (contain-intrinsic-size:1px) {
         ::placeholder {
@@ -2198,9 +2199,9 @@
 
     .min-h-screen {
         min-height: 100vh
-    }butto
+    }
 
-    .min-h-svh {
+    butto .min-h-svh {
         min-height: 100svh
     }
 
@@ -2720,6 +2721,7 @@
     .overflow-auto {
         overflow: auto
     }
+
 
     .overflow-hidden {
         overflow: hidden
@@ -7272,38 +7274,51 @@ body::-webkit-scrollbar-thumb:hover {
 
 .theme-nav-item,
 .theme-nav-active {
-  transition: all 0.3s ease; /* плавний перехід для всіх змін */
-  background-color: transparent; /* базовий стан — прозорий */
+    transition: all 0.3s ease;
+    /* плавний перехід для всіх змін */
+    background-color: transparent;
+    /* базовий стан — прозорий */
 }
 
 /* Hover: м’який синій з блюром */
 .theme-nav-item:hover,
 .theme-nav-active:hover {
-  background-color: rgba(59, 130, 246, 0.12);   /* #3b82f6 з прозорістю 12% — м’який блакитний */
-  backdrop-filter: blur(8px);                   /* блюр фону — дуже приємний ефект */
-  -webkit-backdrop-filter: blur(8px);           /* підтримка Safari */
-  border-radius: 0.75rem;                       /* трохи більший радіус для м’якості */
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); /* легка тінь з синім відтінком */
-  transform: translateX(4px);                   /* легкий зсув вправо — динаміка */
+    background-color: rgba(59, 130, 246, 0.12);
+    /* #3b82f6 з прозорістю 12% — м’який блакитний */
+    backdrop-filter: blur(8px);
+    /* блюр фону — дуже приємний ефект */
+    -webkit-backdrop-filter: blur(8px);
+    /* підтримка Safari */
+    border-radius: 0.75rem;
+    /* трохи більший радіус для м’якості */
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    /* легка тінь з синім відтінком */
+    transform: translateX(4px);
+    /* легкий зсув вправо — динаміка */
 }
 
 /* Active: трохи темніше + сильніший блюр */
 .theme-nav-item:active,
 .theme-nav-active:active {
-  background-color: rgba(59, 130, 246, 0.25);   /* #3b82f6 з прозорістю 25% */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transform: translateX(2px) scale(0.98);       /* легке стиснення при кліку */
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    background-color: rgba(59, 130, 246, 0.25);
+    /* #3b82f6 з прозорістю 25% */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transform: translateX(2px) scale(0.98);
+    /* легке стиснення при кліку */
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 /* Опціонально: підсвітка іконки при hover */
 .theme-nav-item:hover svg,
 .theme-nav-active:hover svg {
-  color: #3b82f6;           /* синій для іконки */
-  transform: scale(1);   /* легке збільшення іконки */
+    color: #3b82f6;
+    /* синій для іконки */
+    transform: scale(1);
+    /* легке збільшення іконки */
 }
+
 .theme-light-modern.active {
-  background: rgba(59, 130, 246, 0.18) !important;
-  backdrop-filter: blur(8px) !important;
+    background: rgba(59, 130, 246, 0.18) !important;
+    backdrop-filter: blur(8px) !important;
 }

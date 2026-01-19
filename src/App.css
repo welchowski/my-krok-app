@@ -42,3 +42,15 @@
 }
 
 
+
+html, body {
+  overflow: visible !important;
+  height: auto !important;
+  touch-action: auto !important;
+  pointer-events: auto !important;
+}
+
+#root, .flex, .h-screen {
+  overflow: visible !important;
+
+}

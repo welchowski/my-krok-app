@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 ">
       {/* Бічна панель */}
       <aside
         className={`
@@ -34,10 +34,9 @@ export default function Dashboard() {
             <NavLink
               to="/dashboard/static"
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
-                    : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
+                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${isActive
+                  ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
+                  : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
                 }`
               }
             >
@@ -51,10 +50,9 @@ export default function Dashboard() {
             <NavLink
               to="/dashboard/flash"
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
-                    : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
+                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${isActive
+                  ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
+                  : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
                 }`
               }
             >
@@ -68,10 +66,9 @@ export default function Dashboard() {
             <NavLink
               to="/dashboard/tests"
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
-                    : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
+                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${isActive
+                  ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
+                  : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
                 }`
               }
             >
@@ -89,10 +86,9 @@ export default function Dashboard() {
             <NavLink
               to="/dashboard/module"
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
-                    : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
+                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${isActive
+                  ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
+                  : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
                 }`
               }
             >
@@ -107,10 +103,9 @@ export default function Dashboard() {
             <NavLink
               to="/dashboard/profile"
               className={({ isActive }) =>
-                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
-                    : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
+                `w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${isActive
+                  ? 'bg-emerald-600 text-white font-semibold shadow-xl shadow-emerald-500/40 scale-105 border border-emerald-400/50'
+                  : 'w-full flex items-center gap-3 p-3 rounded-xl transition-all theme-nav-item'
                 }`
               }
             >
@@ -137,7 +132,7 @@ export default function Dashboard() {
       {/* Оверлей — тільки на мобілці */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/50 z-30 md:hidden pointer-events-auto"
           onClick={() => setSidebarOpen(false)}
         />
       )}

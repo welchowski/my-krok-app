@@ -9,6 +9,9 @@ import Card from './pages/dashboard//Card';
 import FlashCardRun from './components/FlashCardRun';
 import Tests from './pages/dashboard/Tests';
 import TestRun from './components/TestRun';
+import LectionRun from './components/LectionRun';
+import VideoRun from './components/VideoRun'
+import AudioRun from './components/AudioRun'
 
 
 function App() {
@@ -26,6 +29,9 @@ function App() {
           <Route path="tests" element={<Tests />} />          
           <Route path="tests/run" element={<TestRun />} />
           <Route path="module" element={<Module />} />
+          <Route path="lectionRun" element={<LectionRun />} />
+          <Route path="VideoRun" element={<VideoRun />} />
+          <Route path="AudioRun" element={<AudioRun />} />
         </Route>
 
       </Routes>

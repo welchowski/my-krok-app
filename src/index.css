@@ -29,6 +29,7 @@
     width: auto;
     margin: 0 auto;
   }
+ 
 
   /* Кнопки стають вертикальними і компактнішими */
   .flex-wrap {
@@ -82,4 +83,14 @@
     width: 85vw !important;
     max-width: 340px;
   }
+}
+html, body {
+  overflow: visible !important;
+  height: auto !important;
+  touch-action: auto !important;
+  pointer-events: auto !important;
+}
+
+#root, .flex, .h-screen {
+  overflow: visible !important;
 }
