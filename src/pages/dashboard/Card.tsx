@@ -86,10 +86,10 @@ export default function CardSelection() {
 
   const count = selected.size;
 
-  if (loading) return <div className="text-center py-20">Завантаження...</div>;
+  if (loading) return <div className="text-center py-20 min-h-screen p-6 bg-gray-100">Завантаження...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-3xl mx-auto px-4 py-8 min-h-screen p-6 bg-gray-100">
       <h1 className="text-4xl mb-2" >Вибір теми </h1>
       <p className="text-sm text-gray-500 mb-6">
   {userKrokType || '—'} 

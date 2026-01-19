@@ -94,17 +94,17 @@ export default function HomePage() {
                           </span>
                         </div>
                         <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                          Підготуйся до
+                          Підготуйся до 
                           <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                            KROK
+                             &nbsp;KROK&nbsp;
                           </span>
                           з нами!
                         </h1>
                         <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                          Зручна платформа для підготовки до медичних
-                          іспитів
+                          Зручна платформа для підготовки до медичних іспитів
                           <strong>
-                            KROK 1, 2, 3, М, Б.
+
+                            &nbsp;KROK 1, 2, 3, М, Б.&nbsp;
                           </strong>
                           Всі матеріали в одному місці, гейміфікація, зручний
                           пошук та вигідні
@@ -221,7 +221,7 @@ export default function HomePage() {
                       <h2 className="text-4xl lg:text-5xl font-bold mb-4">
                         Чому ми
                         <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                          кращі
+                          &nbsp;кращі&nbsp;
                         </span>
                         за конкурентів?
                       </h2>
@@ -526,7 +526,7 @@ export default function HomePage() {
                           <p className="text-gray-600">
                             На відміну від
                             <strong>
-                              test.testcentr.org.ua, doctrina.space, krok-lead
+                              &nbsp;test.testcentr.org.ua, doctrina.space, krok-lead&nbsp;
                             </strong>
                             та інших, ми пропонуємо повний освітній процес, підготовку до будь якого КРОК, гейміфікацію, мультимедіа,
                             статистику та доступ з будь-якого пристрою
@@ -1392,9 +1392,9 @@ export default function HomePage() {
                                   </span>
                                 </div>
                               </div>
-                              <button className="w-full bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 transition-colors duration-300 flex items-center justify-center gap-3 shadow-md" data-fg-cigc71="1.35:1.5194:/src/app/components/MobileAppsShowcase.tsx:105:11:4750:248:e:button">
-                                <img alt="Get it on Google Play" className="h-24 w-auto scale-150" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-                              </button>
+                              <button className="w-full text-white px-4 py-2 rounded-lg text-sm hover:bg-black transition-colors duration-300 flex items-center justify-center gap-3 shadow-md" style={{ 'backgroundColor': '#1f2937 !important' }}>
+                                <img alt="App Store" className="h-8" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
+                              </button> 
                             </div>
                           </div>
                         </div>
@@ -2031,7 +2031,7 @@ export default function HomePage() {
                       <h2 className="text-4xl lg:text-5xl font-bold mb-4">
                         Як ми
                         <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                          навчаємо?
+                          &nbsp;навчаємо?&nbsp;
                         </span>
                       </h2>
                       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -2279,7 +2279,7 @@ export default function HomePage() {
                       <h2 className="text-4xl lg:text-5xl font-bold mb-4">
                         Твоя особиста
                         <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                          статистика
+                          &nbsp;статистика&nbsp;
                         </span>
                       </h2>
                       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -2507,9 +2507,9 @@ export default function HomePage() {
                       <h2 className="text-4xl lg:text-5xl font-bold mb-4">
                         Наші
                         <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                          плани
+                          &nbsp;плани&nbsp;
                         </span>
-                      </h2>
+                      </h2> 
                       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                         Постійно розвиватися та розширювати можливості
                         нашої платформи
@@ -2701,7 +2701,7 @@ export default function HomePage() {
                       <h2 className="text-4xl lg:text-5xl font-bold mb-4">
                         Вигідні
                         <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                          тарифи
+                          &nbsp;тарифи&nbsp;
                         </span>
                       </h2>
                       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -3160,55 +3160,8 @@ export default function HomePage() {
                         </a>
                       </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold mb-4">
-                        Навігація
-                      </h3>
-                      <ul className="space-y-2">
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#hero">
-                            Головна
-                          </a>
-                        </li>
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#advantages">
-                            Переваги
-                          </a>
-                        </li>
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#learning">
-                            Функції
-                          </a>
-                        </li>
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#pricing">
-                            Тарифи
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-4">
-                        Ресурси
-                      </h3>
-                      <ul className="space-y-2">
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
-                            База знань
-                          </a>
-                        </li>
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
-                            Блог
-                          </a>
-                        </li>
-                        <li>
-                          <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
-                            Підтримка
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
+                    
+
                     <div>
                       <h3 className="font-bold mb-4">
                         Контакти
@@ -3270,12 +3223,15 @@ export default function HomePage() {
                       </a>
                     </div>
                   </div>
-                  <div className="pt-8 border-t border-gray-200">
+                  <div className="pt-4 border-t border-gray-200">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                       <p className="text-gray-600 text-sm">
-                        © 2026 KROK Platform. Всі права захищено.
+                       
                       </p>
                       <div className="flex gap-6 text-sm">
+                        <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
+                           © 2026 KROK Platform. Всі права захищено.
+                        </a>
                         <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
                           Політика конфіденційності
                         </a>

@@ -161,7 +161,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="loading-screen">
+      <div className="loading-screen min-h-screen p-6 bg-gray-100">
         <div className="loading-container">
           <div className="spinner"></div>
           <div>
@@ -175,7 +175,7 @@ export default function Profile() {
   if (error) return <div className="p-8 text-red-600 text-center">{error}</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
+    <div className="max-w-3xl mx-auto p-6 min-h-screen p-6 bg-gray-100">
       {/* Картка профілю */}
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         {/* Шапка з аватаром */}

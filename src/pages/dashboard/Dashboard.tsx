@@ -130,12 +130,7 @@ export default function Dashboard() {
       </button>
 
       {/* Оверлей — тільки на мобілці */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden pointer-events-auto"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+     
 
       {/* Основний контент — з відступом на десктопі */}
       <main className="flex-1 p-6 overflow-y-auto md:ml-64">
