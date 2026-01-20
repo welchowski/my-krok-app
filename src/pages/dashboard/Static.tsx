@@ -50,7 +50,7 @@ export default function Static() {
           <div className="">
             <div className="tailwind css-myl2ny css-10v5rb">
               <div className="min-h-screen bg-white">
-                <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 pt-20">
+                <div className="min-h-screen bg-gradient-to-br bg_base from-slate-50 via-blue-50 to-indigo-50 p-6 pt-20">
                   <div className="max-w-[1600px] mx-auto space-y-6">
                     <div className="bg-white rounded-3xl p-3 shadow-2xl border-4 border-purple-300">
                       <div className="flex items-center justify-between">

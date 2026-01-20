@@ -9,7 +9,7 @@ export default function FlashCard() {
 
             <div className="tailwind css-myl2ny css-10v5rb">
         <div className="min-h-screen">
-          <div className="min-h-screen p-6 bg-gray-100">
+          <div className="min-h-screen p-6 bg_base">
             <div className="max-w-7xl mx-auto">
               <div className="flex gap-6">
                 <div className="flex-1">

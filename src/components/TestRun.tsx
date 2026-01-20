@@ -91,7 +91,7 @@ const getLetterClass = (i: number) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
+    <div className="min-h-screen  bg_base  to-gray-100 py-12 px-4">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl text-gray-900">{current.module_name || 'Загальна анатомія та фізіологія'}</h1>

@@ -10,12 +10,12 @@ export default function FlashCard() {
 
             <div className="tailwind css-myl2ny css-10v5rb">
         <div className="min-h-screen">
-          <div className="min-h-screen p-6 bg-gray-100">
+          <div className="min-h-screen p-6 bg_base">
             <div className="max-w-7xl mx-auto">
               <div className="flex gap-6">
                 <div className="flex-1">
                   <div>
-                   <NavLink to="/dashboard/module" className="mb-6 px-6 py-3 rounded-xl flex items-center gap-2 text-gray-900 bg-gray-100 border border-gray-200">
+                   <NavLink to="/dashboard/module" className="mb-6 px-6 py-3 rounded-xl flex items-center gap-2  text-gray-900 bg_base border border-gray-200">
                       <svg className="lucide lucide-arrow-left w-5 h-5" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                         <path d="m12 19-7-7 7-7" />
                         <path d="M19 12H5" />
@@ -37,7 +37,7 @@ export default function FlashCard() {
                         </div>
                       </div>
                       <div className="flex justify-between items-center mb-6">
-                        <span className="px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700">
+                        <span className="px-4 py-2 rounded-full text-sm bg_base text-gray-700">
                           Тривалість:
                             45:30
                         </span>
@@ -105,14 +105,14 @@ export default function FlashCard() {
                             Виробництво
                               АТФ (енергії)
                           </button>
-                          <button className="w-full p-3 text-left rounded-tl-2xl rounded-br-2xl transition-all shadow-sm bg-gray-100 text-gray-400" disabled={true}>
+                          <button className="w-full p-3 text-left rounded-tl-2xl rounded-br-2xl transition-all shadow-sm bg_base text-gray-400" disabled={true}>
                             <span className="inline-block w-7 h-7 rounded-full text-center leading-7 mr-3 text-sm font-semibold bg-blue-200 text-blue-700">
                               C
                             </span>
                             Зберігання
                               генетичної інформації
                           </button>
-                          <button className="w-full p-3 text-left rounded-tl-2xl rounded-br-2xl transition-all shadow-sm bg-gray-100 text-gray-400" disabled={true}>
+                          <button className="w-full p-3 text-left rounded-tl-2xl rounded-br-2xl transition-all shadow-sm bg_base text-gray-400" disabled={true}>
                             <span className="inline-block w-7 h-7 rounded-full text-center leading-7 mr-3 text-sm font-semibold bg-blue-200 text-blue-700">
                               D
                             </span>

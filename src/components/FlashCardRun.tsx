@@ -72,7 +72,7 @@ useEffect(() => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 cursor-pointer"
+      className="min-h-screen bg_base flex items-center justify-center p-4 cursor-pointer"
       onClick={() => setFlipped(!flipped)}
     >
       <div className="bg-white rounded-3xl shadow-2xl border-4 border-blue-100 w-full max-w-5xl overflow-hidden">
