@@ -17,7 +17,7 @@ export default function Module() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen p-6 bg-gray-100">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen p-6 bg-gradient-to-br from-slate-50 to-indigo-50">
       <div className="flex gap-6">
         <div className="flex-1">
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">

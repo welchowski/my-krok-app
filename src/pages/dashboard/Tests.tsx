@@ -70,10 +70,10 @@ export default function TestsSelection() {
 
   const count = selected.size;
 
-  if (loading) return <div className="text-center py-20 min-h-screen p-6 bg-gray-100">Завантаження...</div>;
+  if (loading) return <div className="text-center py-20 min-h-screen p-6 bg_base">Завантаження...</div>;
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100 max-w-3xl mx-auto px-4 py-8">
+    <div className="min-h-screen p-6 bg_base max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-4xl mb-2" >Вибір теми </h1>
       <p className="text-sm text-gray-500 mb-6">
   {userKrokType || '—'} 

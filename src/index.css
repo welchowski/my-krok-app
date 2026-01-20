@@ -1,4 +1,5 @@
 /* Тільки для мобілки (екрани < 640px) */
+
 @media (max-width: 640px) {
   html {
     font-size: 14px; /* менший базовий текст */
@@ -95,3 +96,12 @@ html, body {
   overflow: visible !important;
 }
   
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .bg_base {
+    @apply bg-gradient-to-br from-slate-50 to-indigo-50;
+  }
+}

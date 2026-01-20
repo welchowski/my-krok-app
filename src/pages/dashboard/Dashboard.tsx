@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-gray-100 ">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-indigo-50 ">
       {/* Бічна панель */}
       <aside
         className={`

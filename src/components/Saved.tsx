@@ -27,6 +27,7 @@ export default function Saved() {
                                 }`}
                         >
                             <FileText className="w-5 h-5" />
+                            Тести
                         </button>
 
                         <button
@@ -40,7 +41,7 @@ export default function Saved() {
                                 <rect height="14" rx="2" width="20" x="2" y="5" />
                                 <line x1="2" x2="22" y1="10" y2="10" />
                             </svg>
-                            Збережені картки
+                            Картки 
                         </button>
                     </div>
 
