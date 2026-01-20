@@ -12,6 +12,7 @@ import TestRun from './components/TestRun';
 import LectionRun from './components/LectionRun';
 import VideoRun from './components/VideoRun'
 import AudioRun from './components/AudioRun'
+import Saved from './components/Saved'
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
           <Route path="lectionRun" element={<LectionRun />} />
           <Route path="VideoRun" element={<VideoRun />} />
           <Route path="AudioRun" element={<AudioRun />} />
+           <Route path="saved" element={<Saved />} />
         </Route>
 
       </Routes>

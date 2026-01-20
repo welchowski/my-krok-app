@@ -96,7 +96,7 @@ useEffect(() => {
                 {current.question}
               </h2>
               {/* image_question - якщо додаси поле в таблицю */}
-              <p className="text-center text-gray-500 text-sm pt-4">
+              <p className="text-center text-gray-500 text-lg pt-4">
                 натисни щоб побачити відповідь
               </p>
             </div>
@@ -196,6 +196,9 @@ useEffect(() => {
 
         
       </div>
+      
     </div>
+    
+    
   )
 }
