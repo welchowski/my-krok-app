@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import './lectionRun.css'; // або назви файл як хочеш
-import heartImage from '/photo-1690306816872-91063f6de36b.png';  // або правильний відносний шлях
+import heartImage from '/videoh.png';  // або правильний відносний шлях
 
 export default function FlashCard() {
     
@@ -26,23 +26,28 @@ export default function FlashCard() {
                       <h2 className="text-3xl mb-6 text-gray-900">
                         Анатомія серця: Основи
                       </h2>
-                      <div className="relative mb-8">
-                        <img alt="Анатомія серця: Основи" className="w-full h-96 object-cover rounded-2xl" src={heartImage} />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-2xl">
-                          <div className="w-24 h-24 bg-white/90 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-all">
-                            <svg className="lucide lucide-play w-12 h-12 text-gray-900 ml-2" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                              <polygon points="6 3 20 12 6 21 6 3" />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
+                     <div className="relative mb-8 rounded-2xl overflow-hidden shadow-2xl " >
+  <video
+    className="  object-cover w-full max-w-[1080px] aspect-[1080/1920]"
+    poster={heartImage}  // твоя картинка серця буде показуватися спочатку
+    controls             // додає кнопки play/pause, гучність, повноекранний режим
+    preload="metadata"   // швидко завантажує тільки метадані
+  >
+    <source src="/videos/anatomyheart.mp4" type="video/mp4" />
+    {/* Якщо є webm — додай */}
+    {/* <source src="/videos/your-video.webm" type="video/webm" /> */}
+    Ваш браузер не підтримує відео.
+  </video>
+</div>
                       <div className="flex justify-between items-center mb-6">
                         <span className="px-4 py-2 rounded-full text-sm bg_base text-gray-700">
                           Тривалість:
-                            45:30
+                            18:45. Відео взято для демо версії з YouTube каналу "Вербич Іван | Анатомія людини"
                         </span>
+                        
                        
                       </div>
+                     
                     </div>
                     <div className="bg-white rounded-2xl shadow-lg p-8 mt-6 mb-8">
                       <h2 className="text-xl mb-0 mt-0 text-gray-900 pb-4 ">

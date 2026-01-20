@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import './lectionRun.css'; // або назви файл як хочеш
+import AudioPlayer from './AudioPlayer';
 
 export default function FlashCard() {
     
@@ -27,28 +28,11 @@ export default function FlashCard() {
                       </h2>
                       <div className="relative mb-8">
                         <div className="bg-white rounded-2xl shadow-lg p-4 mb-8">
-  <div className="flex flex-col items-center gap-0">
-    <button className="w-20 h-20 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-purple-500 hover:bg-purple-600 text-white">
-      <svg className="lucide lucide-play w-10 h-10 ml-1" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="6 3 20 12 6 21 6 3" />
-      </svg>
-    </button>
-    <div className="w-full max-w-2xl">
-      <div className="flex justify-between mb-6">
-        <span className="text-sm text-gray-600">
-          0:00
-        </span>
-        <span className="text-sm text-gray-600">
-          25:15
-        </span>
-      </div>
-      <div className="h-2 rounded-full overflow-hidden bg-gray-200">
-        <div className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all" style={{ 'width': '0%' }} />
-      </div>
+ <div className="w-full bg-gray-950 flex items-center justify-center p-1">
+      <AudioPlayer />
     </div>
-  </div>
   <p className="text-sm opacity-60 mt-2 mb-2">
-    Проф. Іванова О.М.
+    Аудіо взято для демо версії з YouTube каналу "Вербич Іван | Анатомія людини"
   </p>
 </div>
                       </div>
