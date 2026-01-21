@@ -301,7 +301,7 @@ export default function Module() {
                               </svg>
                             </div>
                             <span className="text-white text-sm">
-                              45:30
+                              18:45
                             </span>
                           </div>
                         </div>
@@ -315,7 +315,7 @@ export default function Module() {
                         </span>
                       </div>
                     </div> </NavLink>
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:scale-105 transition-all">
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Ішемічна хвороба серця" className="w-full h-48 object-cover"   src={heartImage} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -342,7 +342,7 @@ export default function Module() {
                         </span>
                       </div>
                     </div>
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:scale-105 transition-all">
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Структура головного мозку" className="w-full h-48 object-cover"   src={heartImage} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -369,7 +369,7 @@ export default function Module() {
                         </span>
                       </div>
                     </div>
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:scale-105 transition-all">
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Епілепсія та судомні стани" className="w-full h-48 object-cover"   src={heartImage} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -396,7 +396,7 @@ export default function Module() {
                         </span>
                       </div>
                     </div>
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:scale-105 transition-all">
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Скелетна система людини" className="w-full h-48 object-cover"   src={heartImage} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -457,7 +457,7 @@ export default function Module() {
                                   <circle cx="12" cy="12" r="10" />
                                   <polyline points="12 6 12 12 16 14" />
                                 </svg>
-                                18:30
+                                18:45
                               </div>
                               <div className="w-10 h-10 rounded-full flex items-center justify-center bg-yellow-500">
                                 <svg className="lucide lucide-play w-5 h-5 text-white ml-1" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
