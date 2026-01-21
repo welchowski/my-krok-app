@@ -7,7 +7,6 @@ export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -16,7 +15,7 @@ export default function AudioPlayer() {
   const audioSrc = "/audio/audioh.mp3"; // або "https://example.com/song.mp3"
 
   // або дозволяємо користувачу завантажувати файл
-  const [customSrc, setCustomSrc] = useState<string | null>(null);
+  const [customSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -38,11 +37,7 @@ export default function AudioPlayer() {
     };
   }, []);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
+ 
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -70,15 +65,7 @@ export default function AudioPlayer() {
     return `${min}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setCustomSrc(url);
-      setIsPlaying(false); // зупиняємо попередній трек
-    }
-  };
-
+ 
   const src = customSrc || audioSrc;
 
   return (
