@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {  useLocation, NavLink } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient'; // ← імпортуй свій клієнт Supabase
 import './test-run.css';
+import TestResultModal from './TestResultModal';
 
 type AnswerState = 'idle' | 'correct' | 'wrong';
+ 
 
 export default function TestRun() {
   const [state, setState] = useState<AnswerState>('idle');
@@ -11,8 +13,17 @@ export default function TestRun() {
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState(0);
+    const [showModal, setShowModal] = useState(false);
 
-  const navigate = useNavigate();
+  // Твої реальні дані після тесту
+  const results = {
+    
+    correct: 0,
+    incorrect: 0,
+    skipped: 0,
+    score: 0,
+  };
+
   const location = useLocation();
   const selectedDisciplines = (location.state?.selectedDisciplines as string[]) || [];
 const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -82,8 +93,18 @@ const getLetterClass = (i: number) => {
 
  const handleAnswer = (i: number) => {
   setSelectedAnswer(i);
+  const isCorrect = i === correctIndex;
   setState(i === correctIndex ? 'correct' : 'wrong');
   if (i === correctIndex) setScore(s => s + 5);
+  if (isCorrect) {
+    setScore(s => s + 5);
+    // Оновлюємо статистику
+    results.correct += 1;           // якщо results — звичайний об'єкт
+    // АБО
+    // setResults(r => ({ ...r, correct: r.correct + 1 }));  // якщо зробиш useState
+  } else {
+    results.incorrect += 1;
+  }
 };
   const nextQuestion = () => {
     setState('idle');
@@ -96,7 +117,10 @@ const getLetterClass = (i: number) => {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl text-gray-900">{current.module_name || 'Загальна анатомія та фізіологія'}</h1>
           <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-lg border-2 border-yellow-300">
-            <span className="text-2xl">🌟</span>
+            <span className="text-2xl"> <svg className="lucide lucide-zap w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z">
+                              </path>
+                            </svg></span>
             <div>
               <p className="text-xs text-gray-600">Бали</p>
               <p className="text-xl font-bold text-yellow-600">{score}</p>
@@ -159,8 +183,9 @@ const getLetterClass = (i: number) => {
          {state !== 'idle' && (
   <div className={`mt-6 p-5 rounded-2xl shadow-md border-2 ${state === 'correct' ? 'bg-green-50 border-green-300' : 'bg-orange-50 border-orange-300'}`}>
     <p className="font-semibold mb-3 text-lg flex items-center gap-2 text-gray-900">
-      {state === 'correct' ? (
-        <>✓ Відмінно! Правильна відповідь <span className="text-yellow-600 font-bold ml-2">+5 балів 🌟</span></>
+      {state === 'correct' ?  (
+        
+        <>✓ Відмінно! Правильна відповідь <span className="text-yellow-600 font-bold ml-10">+5 балів    </span></>
       ) : (
         '✗ На жаль, це не правильно'
       )}
@@ -182,10 +207,19 @@ const getLetterClass = (i: number) => {
           <div className="mt-8 flex gap-4 justify-center">
             <button
               className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-              onClick={() => navigate('/dashboard')}
-            >
-              Завершити
-            </button>
+              onClick={() => setShowModal(true)}
+                                        
+                                      >
+                                        Завершити
+                                      </button>
+                                      <TestResultModal
+                   isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                correct={results.correct}
+                incorrect={results.incorrect}
+                skipped={results.skipped}
+                score={results.score}
+                    />
 
             {state !== 'idle' && currentQuestion + 1 < questions.length && (
               <button
@@ -201,42 +235,151 @@ const getLetterClass = (i: number) => {
         {/* Схожі матеріали - оригінальний дизайн */}
         <div className="border-t-2 border-gray-200 pt-8">
           <h3 className="text-lg mb-4 text-gray-900">Схожі матеріали</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <button className="p-3 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors flex flex-col items-center gap-2">
-              <svg className="lucide lucide-layers" fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20">
-                <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
-                <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
-                <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
-              </svg>
-              <span className="text-xs">Флеш картки</span>
-            </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <NavLink
+                    to="/dashboard/VideoRun"
+                    className="block transition-all h over:scale-105"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                >
+                    <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
+                                <svg className="lucide lucide-play w-6 h-6 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <polygon points="6 3 20 12 6 21 6 3" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-gray-900">
+                                    Відео-лекція
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                    45 хвилин
+                                </p>
+                            </div>
+                        </div>
+                    </div></NavLink>
+                <NavLink
+                    to="/dashboard/flashexample"
+                    className="block transition-all h over:scale-105"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                >
+                    <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <svg className="lucide lucide-credit-card w-6 h-6 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <rect height="14" rx="2" width="20" x="2" y="5" />
+                                    <line x1="2" x2="22" y1="10" y2="10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-gray-900">
+                                    Флеш-картки
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                    25 карток
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </NavLink>
+                 <NavLink
+                 to="/dashboard/lectionRun"
+                    className="block transition-all h over:scale-105"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}>
 
-            <button className="p-3 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors flex flex-col items-center gap-2">
-              <svg className="lucide lucide-video" fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20">
-                <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
-                <rect height="12" rx="2" width="14" x="2" y="6" />
-              </svg>
-              <span className="text-xs">Відео</span>
-            </button>
+                <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                            <svg className="lucide lucide-file-text w-6 h-6 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+                                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                                <path d="M10 9H8" />
+                                <path d="M16 13H8" />
+                                <path d="M16 17H8" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 className="text-gray-900">
+                                Лекція
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                                6 питань
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                 </NavLink>
+                 <NavLink to="/dashboard/AudioRun"
+                    className="block transition-all h over:scale-105"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}>
+                <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                            <svg className="lucide lucide-mic w-6 h-6 text-white"
+                                fill="none" height="24" stroke="currentColor" strokeLinecap="round"
+                                strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                <line x1="12" x2="12" y1="19" y2="22" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 className="text-gray-900">
+                                Аудіо
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                                6 питань
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                </NavLink>
+                <NavLink to="/dashboard/Testexample"
+                    className="block transition-all h over:scale-105"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}>
+                <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br bg-yellow-400 rounded-xl flex items-center justify-center">
+                            <svg className="lucide lucide-list-checks w-6 h-6 text-white"
+                                fill="none" height="24" stroke="currentColor" strokeLinecap="round"
+                                strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="m3 10 2.5 2.5L11 6" />
+                                <path d="m3 17 2.5 2.5L11 13" />
+                                <path d="M13 6h8" />
+                                <path d="M13 13h8" />
+                                <path d="M13 17h8" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 className="text-gray-900">
+                                Тести
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                                6 питань
+                            </p>
+                        </div>
+                    </div>
 
-            <button className="p-3 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors flex flex-col items-center gap-2">
-              <svg className="lucide lucide-file-text" fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20">
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
-                <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-                <path d="M10 9H8" />
-                <path d="M16 13H8" />
-                <path d="M16 17H8" />
-              </svg>
-              <span className="text-xs">Лекції</span>
-            </button>
-
-            <button className="p-3 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition-colors flex flex-col items-center gap-2">
-              <svg className="lucide lucide-headphones" fill="none" height="20" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20">
-                <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />
-              </svg>
-              <span className="text-xs">Аудіо</span>
-            </button>
-          </div>
+                </div>
+                </NavLink>
+            </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 // src/pages/dashboard/Profile.tsx
 import './static.css';
+import {  NavLink } from 'react-router-dom';
 function MultiRingProgress({ values, size = 220 }: {
   values: { label: string; value: number; color: string }[];
   size?: number
@@ -32,7 +33,7 @@ function MultiRingProgress({ values, size = 220 }: {
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-bold text-gray-800">{Math.round(values[0]?.value ?? 0)}%</span>
+        <span className="text-2xl font-bold text-gray-800">{Math.round(values[0]?.value ?? 0)}%</span>
         <span className="text-sm text-gray-500">{values[0]?.label || ''}</span>
       </div>
     </div>
@@ -76,7 +77,7 @@ export default function Static() {
                                 💎 Рівень 12
                               </div>
                               <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                ⭐ 8450 XP
+                                ⭐ 8450 балів
                               </div>
                               <div className="bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
                                 🔥 23 днів
@@ -127,7 +128,7 @@ export default function Static() {
                               Тести
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              4/5
+                              10/20
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all" style={{ 'width': '80%' }} />
@@ -148,7 +149,7 @@ export default function Static() {
                               Картки
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              25/30
+                              15/30
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full transition-all" style={{ 'width': '83.3333%' }} />
@@ -169,7 +170,7 @@ export default function Static() {
                               Лекції
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              1/2
+                              1/1
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all" style={{ 'width': '50%' }} />
@@ -186,10 +187,10 @@ export default function Static() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm text-gray-700">
-                              XP
+                              Балів
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              420/500
+                              100/125
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all" style={{ 'width': '84%' }} />
@@ -209,9 +210,9 @@ export default function Static() {
                             <MultiRingProgress
                               size={480}
                               values={[
-                                { label: '', value:100, color: '#10b981' }, // зелений
-                                { label: 'В процесі', value: 70, color: '#eab308' }, // жовтий
-                                { label: 'Не розпочато', value: 45, color: '#a855f7' }, // фіолетовий
+                                { label: '', value:80, color: '#10b981' }, // зелений
+                                { label: 'В процесі', value: 15, color: '#eab308' }, // жовтий
+                                { label: 'Не розпочато', value: 5, color: '#a855f7' }, // фіолетовий
                               ]}
                             />
                           </div>
@@ -224,7 +225,7 @@ export default function Static() {
                               Правильно
                             </p>
                             <p className="text-lg font-bold text-gray-900">
-                              3247
+                              500
                             </p>
                           </div>
                           <div className="text-center p-3 rounded-xl bg-gradient-to-br from-red-50 to-red-100/40 shadow-sm">
@@ -233,7 +234,7 @@ export default function Static() {
                               Неправильно
                             </p>
                             <p className="text-lg font-bold text-gray-900">
-                              428
+                              100
                             </p>
                           </div>
                           <div className="text-center p-3 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100/40 shadow-sm">
@@ -242,7 +243,7 @@ export default function Static() {
                               Пропущено
                             </p>
                             <p className="text-lg font-bold text-gray-900">
-                              193
+                              50
                             </p>
                           </div>
                         </div>
@@ -309,15 +310,21 @@ export default function Static() {
                           <div className="text-3xl text-orange-600 mb-2">
                             8 тем
                           </div>
-                          <button className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors">
+                          <button  className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors"type="button"
+  onClick={() => {
+    document.querySelector('#needlearn')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }}>
                             Тренувати
                             зараз
                           </button>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
-                      <h3 className="text-xl font-bold text-gray-900 mb-6">
+                    <div id="needlearn" className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
+                      <h3 className="text-xl font-bold text-gray-900 mb-6" >
                         Поглиблений аналіз дисциплін
                       </h3>
                       <div className="overflow-x-auto">
@@ -407,9 +414,15 @@ export default function Static() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                <button className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                                <NavLink 
+                                to="/dashboard/Selectvariant"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
                                   Переглянути →
-                                </button>
+                                </NavLink>
                               </td>
                             </tr>
                             <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -474,9 +487,15 @@ export default function Static() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                <button className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                               <NavLink 
+                                to="/dashboard/Selectvariant"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
                                   Переглянути →
-                                </button>
+                                </NavLink>
                               </td>
                             </tr>
                             <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -541,9 +560,15 @@ export default function Static() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                <button className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                               <NavLink 
+                                to="/dashboard/Selectvariant"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
                                   Переглянути →
-                                </button>
+                                </NavLink>
                               </td>
                             </tr>
                             <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -608,9 +633,15 @@ export default function Static() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                <button className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                               <NavLink 
+                                to="/dashboard/Selectvariant"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
                                   Переглянути →
-                                </button>
+                                </NavLink>
                               </td>
                             </tr>
                             <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -675,9 +706,15 @@ export default function Static() {
                                 </div>
                               </td>
                               <td className="py-4 px-4">
-                                <button className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                               <NavLink 
+                                to="/dashboard/Selectvariant"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                        // или window.scrollTo(0, 0);
+                    }}
+                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
                                   Переглянути →
-                                </button>
+                                </NavLink>
                               </td>
                             </tr>
                           </tbody>
@@ -945,7 +982,7 @@ export default function Static() {
                     <h3 className="text-xl font-bold text-gray-800 mb-6">
                       Досягнення та нагороди
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                    <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-8 gap-4">
                       <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-10 h-10 text-amber-500 mb-2">
                           <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />

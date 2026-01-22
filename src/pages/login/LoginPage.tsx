@@ -77,7 +77,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     <button className="w-full bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white py-4 rounded-lg font-bold text-base transition-all shadow-md hover:shadow-lg mt-6" type="submit">
-                      Увійти до системи
+                      
                     </button>
                   </form>
                 </div>

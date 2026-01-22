@@ -13,6 +13,9 @@ import LectionRun from './components/LectionRun';
 import VideoRun from './components/VideoRun'
 import AudioRun from './components/AudioRun'
 import Saved from './components/Saved'
+import Flashexample from './components/Flashexample'
+import Testhexample from './components/Testexample'
+import Selectvariant from './components/Selectvariant'
 
 
 function App() {
@@ -33,6 +36,9 @@ function App() {
           <Route path="lectionRun" element={<LectionRun />} />
           <Route path="VideoRun" element={<VideoRun />} />
           <Route path="AudioRun" element={<AudioRun />} />
+           <Route path="flashexample" element={<Flashexample />} />
+           <Route path="Testexample" element={<Testhexample />} />
+            <Route path="Selectvariant" element={<Selectvariant />} />
            <Route path="saved" element={<Saved />} />
         </Route>
 

@@ -13,8 +13,11 @@ interface TestResultModalProps {
 export default function TestResultModal({
   isOpen,
   onClose,
-  
-}: TestResultModalProps) {
+  correct = 0,     // можна залишити, якщо хочеш безпечний дефолт
+  incorrect = 0,
+  skipped = 0,
+  score = 0,
+}: TestResultModalProps)  {
   if (!isOpen) return null;
 
   return (
@@ -88,7 +91,7 @@ export default function TestResultModal({
                 </div>
                 <span className="font-semibold text-slate-700">Правильно</span>
               </div>
-              <div className="text-3xl font-bold text-green-600">18</div>
+              <div className="text-3xl font-bold text-green-600">{correct}</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-md border-l-4 border-red-500">
               <div className="flex items-center gap-2 mb-2">
@@ -101,7 +104,7 @@ export default function TestResultModal({
                 </div>
                 <span className="font-semibold text-slate-700">Неправильно</span>
               </div>
-              <div className="text-3xl font-bold text-red-600">5</div>
+              <div className="text-3xl font-bold text-red-600">{incorrect}</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-md border-l-4 border-slate-400">
               <div className="flex items-center gap-2 mb-2">
@@ -113,7 +116,7 @@ export default function TestResultModal({
                 </div>
                 <span className="font-semibold text-slate-700">Пропущено</span>
               </div>
-              <div className="text-3xl font-bold text-slate-600">2</div>
+              <div className="text-3xl font-bold text-slate-600">{skipped}</div>
             </div>
             <div className="bg-white p-4 rounded-2xl shadow-md border-l-4 border-emerald-500">
               <div className="flex items-center gap-2 mb-2">
@@ -129,7 +132,7 @@ export default function TestResultModal({
                 </div>
                 <span className="font-semibold text-slate-700">Бали</span>
               </div>
-              <div className="text-3xl font-bold text-emerald-600">85</div>
+              <div className="text-3xl font-bold text-emerald-600">{score}</div>
             </div>
           </div>
 
