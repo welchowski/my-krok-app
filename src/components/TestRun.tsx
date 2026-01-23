@@ -99,7 +99,7 @@ export default function TestRun() {
     setSelectedAnswer(i);
     const isCorrect = i === correctIndex;
     setState(i === correctIndex ? 'correct' : 'wrong');
-    if (i === correctIndex) setScore(s => s + 5);
+   
     if (isCorrect) {
       setScore(s => s + 5);
       // Оновлюємо статистику
