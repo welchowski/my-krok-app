@@ -25,8 +25,10 @@ const [results, setResults] = useState({
   correct: 0,
   incorrect: 0,
   skipped: 0,
-  score: 0,           // або points
+  score: 0,
 });
+
+const [score, setScore] = useState(0);
 const startTimeRef = useRef(Date.now());
   const selectedDisciplines = (location.state?.selectedDisciplines as string[]) || [];
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -46,6 +48,8 @@ const startTimeRef = useRef(Date.now());
   if (!user) {
     console.warn("Користувач не авторизований");
     return;
+
+  
   }
 
   const discipline = questions[0]?.discipline || "Змішані дисципліни";
@@ -132,7 +136,9 @@ const startTimeRef = useRef(Date.now());
       xp_earned: newXP,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id, date' });
+    
 }
+
 
   useEffect(() => {
     async function loadQuestions() {
@@ -190,12 +196,18 @@ const startTimeRef = useRef(Date.now());
   setSelectedAnswer(i);
   const isCorrect = i === correctIndex;
 
-  setResults(prev => ({
-    ...prev,
-    correct: isCorrect ? prev.correct + 1 : prev.correct,
-    incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
-    score: isCorrect ? prev.score + 5 : prev.score,   // або інша логіка нарахування
-  }));
+  setResults(prev => {
+    const newScore = isCorrect ? prev.score + 5 : prev.score;
+
+    setScore(newScore); // синхронізуємо з UI
+
+    return {
+      ...prev,
+      correct: isCorrect ? prev.correct + 1 : prev.correct,
+      incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
+      score: newScore,
+    };
+  });
 
   setState(isCorrect ? 'correct' : 'wrong');
 };
@@ -216,7 +228,7 @@ const startTimeRef = useRef(Date.now());
             </svg></span>
             <div>
               <p className="text-xs text-gray-600">Бали</p>
-              <p className="text-xl font-bold text-yellow-600">{results.score}</p>
+              <p className="text-xl font-bold text-yellow-600">{score}</p>
             </div>
           </div>
         </div>
@@ -319,8 +331,13 @@ const startTimeRef = useRef(Date.now());
               onClick={async () => {
     await saveTestSession();
     setShowModal(true);
-  }}
 
+    // Простий спосіб оновити профіль — перезавантажити сторінку
+    // window.location.reload();  // або краще — викликати fetch знов, але для простоти
+
+    // Альтернатива: dispatch події, щоб профіль оновився автоматично
+    window.dispatchEvent(new Event('testCompleted'));
+  }}
             >
               Завершити
             </button>

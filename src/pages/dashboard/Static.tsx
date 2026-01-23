@@ -9,6 +9,8 @@ interface ProfileStats {
   streakDays: number;
   rank: number;
   examDaysLeft?: number;
+  first_name?: string;
+  last_name?: string;
 }
 
 interface DailyGoal {
@@ -104,30 +106,78 @@ export default function Static() {
           .select('correct_count, wrong_count, skipped_count, score_percent')
           .eq('user_id', user.id);
 
+        const { data: allDaily } = await supabase
+          .from('user_daily_goals')
+          .select('xp_earned')
+          .eq('user_id', user.id);
+
+        const totalPoints = allDaily?.reduce((sum, d) => sum + (d.xp_earned || 0), 0) ?? 0;
+        const level = Math.floor(totalPoints / 500) + 1; // наприклад, кожні 500 балів — новий рівень
+        let streakDays = 0;
+
+        const { data: streakRecord } = await supabase
+          .from('user_streak')
+          .select('current_streak, longest_streak, last_active_date')
+          .eq('user_id', user.id)
+          .single();
+
+
+
+        if (streakRecord) {
+          streakDays = streakRecord.current_streak ?? 0;
+
+
+          // Опціонально: перевіряємо, чи сьогодні був активний день
+          const todayStr = new Date().toISOString().split('T')[0];
+          const lastActive = streakRecord.last_active_date
+            ? new Date(streakRecord.last_active_date).toISOString().split('T')[0]
+            : null;
+
+          if (lastActive !== todayStr) {
+            // Якщо сьогодні ще не активний — стрік не збільшується на фронті
+            // (бекенд повинен оновлювати current_streak після активності)
+            streakDays = streakRecord.current_streak ?? 0;
+          }
+        } else {
+          // Якщо запису ще немає — стрік 0
+          streakDays = 0;
+        }
+        const { count } = await supabase
+          .from('profiles')
+          .select('id', { count: 'exact' })
+          .gt('points', totalPoints); // скільки людей має більше балів
+
+        const rank = (count ?? 0) + 1;
+
+
+
         const totalCorrect = sessions?.reduce((sum, s) => sum + (s.correct_count || 0), 0) ?? 0;
         const totalWrong = sessions?.reduce((sum, s) => sum + (s.wrong_count || 0), 0) ?? 0;
         const totalSkipped = sessions?.reduce((sum, s) => sum + (s.skipped_count || 0), 0) ?? 0;
-        const totalQuestions = totalCorrect + totalWrong + totalSkipped;
 
-        const overallProgress = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
         // Рівень, бали, стрік — для прикладу захардкодимо, пізніше розрахуємо
         setProfile({
-          level: 12,
-          points: 2450,
-          streakDays: 2,
-          rank: 3,
-          examDaysLeft: 45,
+          level,
+          points: totalPoints,
+          streakDays,
+          rank,
+          examDaysLeft: 45, // поки захардкоджено
+          first_name: profileData?.first_name, // <-- додай це
+          last_name: profileData?.last_name,
         });
 
         // Щоденні цілі (з user_daily_goals)
         const today = new Date().toISOString().split('T')[0];
+
+
         const { data: daily } = await supabase
           .from('user_daily_goals')
           .select('*')
           .eq('user_id', user.id)
           .eq('date', today)
           .single();
+
 
         setDailyGoals({
           tests_current: daily?.tests_completed ?? 0,
@@ -172,6 +222,7 @@ export default function Static() {
     fetchProfileData();
   }, []);
 
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-2xl">Завантаження профілю...</div>;
   }
@@ -204,11 +255,11 @@ export default function Static() {
                           </div>
                           <div>
                             <h1 className="text-2xl text-gray-900 mb-2">
-                              Ви
+                              {profile?.first_name} {profile?.last_name}
                             </h1>
                             <div className="flex items-center gap-2">
                               <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                💎 Рівень {profile?.level ?? 1}
+                                💎 Рівень {profile?.level ?? 0}
                               </div>
                               <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
                                 ⭐ {profile?.points ?? 0} балів
@@ -308,7 +359,7 @@ export default function Static() {
                               {dailyGoals?.lectures_current ?? 0}/{dailyGoals?.lectures_target ?? 2}
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
-                              <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all" style={{ 'width': '50%' }} />
+                              <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all" style={{ width: `${dailyGoals ? (dailyGoals.lectures_current / dailyGoals.lectures_target) * 100 : 0}%` }} />
                             </div>
                           </div>
                         </div>
@@ -345,9 +396,9 @@ export default function Static() {
                             <MultiRingProgress
                               size={260}
                               values={[
-                                { label: '', value: distribution?.correct ? Math.round((distribution.correct / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 80, color: '#10b981' },
-                                { label: 'Неправильно', value: distribution?.wrong ? Math.round((distribution.wrong / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 15, color: '#eab308' },
-                                { label: 'Пропущено', value: distribution?.skipped ? Math.round((distribution.skipped / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 5, color: '#a855f7' },
+                                { label: '', value: distribution?.correct ? Math.round((distribution.correct / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 0, color: '#10b981' },
+                                { label: 'Неправильно', value: distribution?.wrong ? Math.round((distribution.wrong / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 0, color: '#a855f7' },
+                                { label: 'Пропущено', value: distribution?.skipped ? Math.round((distribution.skipped / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 0, color: '#eab308' },
                               ]}
                             />
                           </div>
@@ -487,40 +538,40 @@ export default function Static() {
                                     <span className="font-semibold text-gray-900">{disc.discipline}</span>
                                   </div>
                                 </td>
-                               <td className="py-4 px-4">
-  <div className="flex items-center gap-3">
-    <div className="flex-1">
-      <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"> {/* темний фон, без сірого та білого */}
-        <div
-          className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{
-            width: `${disc.progress}%`,
-            backgroundColor:
-              disc.progress <= 30
-                ? '#a855f7'      // фіолетовий
-                : disc.progress <= 70
-                  ? '#eab308'    // жовтий
-                  : '#22c55e'    // зелений (як у твоєму початковому коді)
-          }}
-        />
-      </div>
-    </div>
+                                <td className="py-4 px-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex-1">
+                                      <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"> {/* темний фон, без сірого та білого */}
+                                        <div
+                                          className="h-full rounded-full transition-all duration-500 ease-out"
+                                          style={{
+                                            width: `${disc.progress}%`,
+                                            backgroundColor:
+                                              disc.progress <= 30
+                                                ? '#a855f7'      // фіолетовий
+                                                : disc.progress <= 70
+                                                  ? '#eab308'    // жовтий
+                                                  : '#22c55e'    // зелений (як у твоєму початковому коді)
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
 
-    <span
-      className="font-bold text-sm transition-colors duration-500"
-      style={{
-        color:
-          disc.progress <= 30
-            ? '#a855f7'      // той самий фіолетовий
-            : disc.progress <= 70
-              ? '#eab308'    // той самий жовтий
-              : '#22c55e'    // той самий зелений
-      }}
-    >
-      {disc.progress}%
-    </span>
-  </div>
-</td>
+                                    <span
+                                      className="font-bold text-sm transition-colors duration-500"
+                                      style={{
+                                        color:
+                                          disc.progress <= 30
+                                            ? '#a855f7'      // той самий фіолетовий
+                                            : disc.progress <= 70
+                                              ? '#eab308'    // той самий жовтий
+                                              : '#22c55e'    // той самий зелений
+                                      }}
+                                    >
+                                      {disc.progress}%
+                                    </span>
+                                  </div>
+                                </td>
                                 <td className="py-4 px-4">
                                   <div className="flex items-center gap-2">
                                     <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -533,7 +584,7 @@ export default function Static() {
                                 </td>
                                 <td className="py-4 px-4">
                                   <div className="flex items-center gap-2">
-                                   <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                                    <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
                                     <span className="text-gray-700">{disc.strong_questions} питань</span>
                                   </div>
                                 </td>
