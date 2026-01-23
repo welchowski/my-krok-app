@@ -1,6 +1,7 @@
 // src/pages/dashboard/Saved.tsx
 import { useState } from 'react';
 import { Bookmark, FileText } from 'lucide-react'; // або твої іконки
+import { NavLink } from 'react-router-dom';
 
 export default function Saved() {
     const [activeTab, setActiveTab] = useState<'tests' | 'flashcards'>('tests');
@@ -64,9 +65,10 @@ export default function Saved() {
                                         >
                                             Видалити
                                         </button>
-                                        <button className="px-5 py-2 bg-emerald-600 text-white rounded-lg">
+                                         <NavLink
+                          to="/dashboard/Testexample" className="px-5 py-2 bg-emerald-600 text-white rounded-lg  transition-all  over:scale-105">
                                             Пройти
-                                        </button>
+                                        </NavLink>
                                     </div>
                                 </div>
                                 <h2 className="text-xl font-semibold text-gray-800  mt-12">Тести по темам</h2>
@@ -85,9 +87,10 @@ export default function Saved() {
                                         >
                                             Видалити
                                         </button>
-                                        <button className="px-5 py-2 bg-emerald-600 text-white rounded-lg">
+                                        <NavLink
+                          to="/dashboard/Testexample" className="px-5 py-2 bg-emerald-600 text-white rounded-lg  transition-all  over:scale-105">
                                             Пройти
-                                        </button>
+                                        </NavLink>
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
@@ -103,9 +106,10 @@ export default function Saved() {
                                         >
                                             Видалити
                                         </button>
-                                        <button className="px-5 py-2 bg-emerald-600 text-white rounded-lg">
+                                        <NavLink
+                          to="/dashboard/Testexample" className="px-5 py-2 bg-emerald-600 text-white rounded-lg  transition-all  over:scale-105">
                                             Пройти
-                                        </button>
+                                        </NavLink>
                                     </div>
                                 </div>
 
@@ -148,9 +152,10 @@ export default function Saved() {
                                         >
                                             Видалити
                                         </button>
-                                        <button className="px-5 py-2 bg-emerald-600 text-white rounded-lg">
+                                        <NavLink
+                          to="/dashboard/flashexample" className="px-5 py-2 bg-emerald-600 text-white rounded-lg  transition-all  over:scale-105">
                                             Пройти
-                                        </button>
+                                        </NavLink>
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center">
@@ -166,9 +171,10 @@ export default function Saved() {
                                         >
                                             Видалити
                                         </button>
-                                        <button className="px-5 py-2 bg-emerald-600 text-white rounded-lg">
+                                        <NavLink
+                          to="/dashboard/flashexample" className="px-5 py-2 bg-emerald-600 text-white rounded-lg  transition-all  over:scale-105">
                                             Пройти
-                                        </button>
+                                        </NavLink>
                                     </div>
                                 </div>
 
