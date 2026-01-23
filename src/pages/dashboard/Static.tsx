@@ -1,6 +1,42 @@
 // src/pages/dashboard/Profile.tsx
 import './static.css';
-import {  NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+import { supabase } from '../../lib/supabaseClient';
+interface ProfileStats {
+  level?: number;
+  points: number;
+  streakDays: number;
+  rank: number;
+  examDaysLeft?: number;
+}
+
+interface DailyGoal {
+  tests_current: number;
+  tests_target: number;
+  cards_current: number;
+  cards_target: number;
+  lectures_current: number;
+  lectures_target: number;
+  xp_current: number;
+  xp_target: number;
+}
+
+interface DisciplineProgress {
+  discipline: string;
+  progress: number;           // 0-100
+  weak_questions: number;
+  strong_questions: number;
+  weak_topic?: string;
+}
+
+interface AnswerDistribution {
+  correct: number;
+  wrong: number;
+  skipped: number;
+}
+
+
 function MultiRingProgress({ values, size = 220 }: {
   values: { label: string; value: number; color: string }[];
   size?: number
@@ -43,6 +79,104 @@ function MultiRingProgress({ values, size = 220 }: {
 export default function Static() {
 
 
+  const [profile, setProfile] = useState<ProfileStats | null>(null);
+  const [dailyGoals, setDailyGoals] = useState<DailyGoal | null>(null);
+  const [distribution, setDistribution] = useState<AnswerDistribution | null>(null);
+  const [disciplines, setDisciplines] = useState<DisciplineProgress[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProfileData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // 1. Профіль користувача (з таблиці profiles + розрахунки)
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, group_name, university')
+          .eq('id', user.id)
+          .single();
+
+        // Розрахунок статистики (можна винести в окремий запит або view)
+        const { data: sessions } = await supabase
+          .from('user_test_sessions')
+          .select('correct_count, wrong_count, skipped_count, score_percent')
+          .eq('user_id', user.id);
+
+        const totalCorrect = sessions?.reduce((sum, s) => sum + (s.correct_count || 0), 0) ?? 0;
+        const totalWrong = sessions?.reduce((sum, s) => sum + (s.wrong_count || 0), 0) ?? 0;
+        const totalSkipped = sessions?.reduce((sum, s) => sum + (s.skipped_count || 0), 0) ?? 0;
+        const totalQuestions = totalCorrect + totalWrong + totalSkipped;
+
+        const overallProgress = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+
+        // Рівень, бали, стрік — для прикладу захардкодимо, пізніше розрахуємо
+        setProfile({
+          level: 12,
+          points: 2450,
+          streakDays: 2,
+          rank: 3,
+          examDaysLeft: 45,
+        });
+
+        // Щоденні цілі (з user_daily_goals)
+        const today = new Date().toISOString().split('T')[0];
+        const { data: daily } = await supabase
+          .from('user_daily_goals')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('date', today)
+          .single();
+
+        setDailyGoals({
+          tests_current: daily?.tests_completed ?? 0,
+          tests_target: daily?.tests_target ?? 20,
+          cards_current: daily?.cards_completed ?? 0,
+          cards_target: daily?.cards_target ?? 30,
+          lectures_current: daily?.lectures_completed ?? 0,
+          lectures_target: daily?.lectures_target ?? 2,
+          xp_current: daily?.xp_earned ?? 0,
+          xp_target: daily?.xp_target ?? 125,
+        });
+
+        // Розподіл відповідей
+        setDistribution({
+          correct: totalCorrect,
+          wrong: totalWrong,
+          skipped: totalSkipped,
+        });
+
+        // Прогрес по дисциплінах
+        const { data: discData } = await supabase
+          .from('user_discipline_progress')
+          .select('discipline, questions_total, correct_count, wrong_count')
+          .eq('user_id', user.id);
+
+        const formattedDisciplines = discData?.map(d => ({
+          discipline: d.discipline,
+          progress: d.questions_total > 0 ? Math.round((d.correct_count / d.questions_total) * 100) : 0,
+          weak_questions: d.wrong_count,
+          strong_questions: d.correct_count,
+          weak_topic: d.wrong_count > 0 ? "Потрібно повторити" : undefined,
+        })) ?? [];
+
+        setDisciplines(formattedDisciplines);
+      } catch (err) {
+        console.error('Помилка завантаження профілю:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProfileData();
+  }, []);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-2xl">Завантаження профілю...</div>;
+  }
+
+
   return (
     <div>
 
@@ -58,7 +192,7 @@ export default function Static() {
                         <div className="flex items-center gap-5">
                           <div className="relative">
                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-2xl shadow-xl border-4 border-white">
-                              
+
                             </div>
                             <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full p-2 shadow-lg border-3 border-white">
                               <svg className="lucide lucide-crown w-4 h-4 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -74,16 +208,16 @@ export default function Static() {
                             </h1>
                             <div className="flex items-center gap-2">
                               <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                💎 Рівень 12
+                                💎 Рівень {profile?.level ?? 1}
                               </div>
                               <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                ⭐ 2450 балів
+                                ⭐ {profile?.points ?? 0} балів
                               </div>
                               <div className="bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                🔥 23 днів
+                                🔥 {profile?.streakDays ?? 0} днів
                               </div>
                               <div className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                🏆 #3
+                                🏆 # {profile?.rank ?? '?'}
                               </div>
                             </div>
                           </div>
@@ -128,10 +262,10 @@ export default function Static() {
                               Тести
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              16/20
+                              {dailyGoals?.tests_current ?? 0}/{dailyGoals?.tests_target ?? 20}
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
-                              <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all" style={{ 'width': '80%' }} />
+                              <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all" style={{ width: `${dailyGoals ? (dailyGoals.tests_current / dailyGoals.tests_target) * 100 : 0}%` }} />
                             </div>
                           </div>
                         </div>
@@ -149,10 +283,11 @@ export default function Static() {
                               Картки
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              25/30
+                              {dailyGoals?.cards_current ?? 0}/{dailyGoals?.cards_target ?? 30}
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
-                              <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full transition-all" style={{ 'width': '83.3333%' }} />
+                              <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full transition-all" style={{ width: `${dailyGoals ? (dailyGoals.cards_current / dailyGoals.cards_target) * 100 : 0}%` }}
+                              />
                             </div>
                           </div>
                         </div>
@@ -167,10 +302,10 @@ export default function Static() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm text-gray-700">
-                              Лекції
+                              Урок (модулі)
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              1/2
+                              {dailyGoals?.lectures_current ?? 0}/{dailyGoals?.lectures_target ?? 2}
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all" style={{ 'width': '50%' }} />
@@ -190,11 +325,11 @@ export default function Static() {
                               Балів
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              100/125
+                              {dailyGoals?.xp_current ?? 0}/{dailyGoals?.xp_target ?? 125}
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
-                              <div className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all" style={{ 'width': '84%' }} />
-                            </div>
+                              <div className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transition-all" style={{ width: `${dailyGoals ? (dailyGoals.xp_current / dailyGoals.xp_target) * 100 : 0}%` }}
+                              />                            </div>
                           </div>
                         </div>
                       </div>
@@ -210,9 +345,9 @@ export default function Static() {
                             <MultiRingProgress
                               size={260}
                               values={[
-                                { label: '', value:80, color: '#10b981' }, // зелений
-                                { label: 'В процесі', value: 15, color: '#eab308' }, // жовтий
-                                { label: 'Не розпочато', value: 5, color: '#a855f7' }, // фіолетовий
+                                { label: '', value: distribution?.correct ? Math.round((distribution.correct / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 80, color: '#10b981' },
+                                { label: 'Неправильно', value: distribution?.wrong ? Math.round((distribution.wrong / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 15, color: '#eab308' },
+                                { label: 'Пропущено', value: distribution?.skipped ? Math.round((distribution.skipped / (distribution.correct + distribution.wrong + distribution.skipped)) * 100) : 5, color: '#a855f7' },
                               ]}
                             />
                           </div>
@@ -225,7 +360,7 @@ export default function Static() {
                               Правильно
                             </p>
                             <p className="text-lg font-bold text-gray-900">
-                              500
+                              {distribution?.correct ?? 500}
                             </p>
                           </div>
                           <div className="text-center p-3 rounded-xl bg-gradient-to-br from-red-50 to-red-100/40 shadow-sm">
@@ -234,7 +369,7 @@ export default function Static() {
                               Неправильно
                             </p>
                             <p className="text-lg font-bold text-gray-900">
-                              100
+                              {distribution?.wrong ?? 100}
                             </p>
                           </div>
                           <div className="text-center p-3 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100/40 shadow-sm">
@@ -243,7 +378,7 @@ export default function Static() {
                               Пропущено
                             </p>
                             <p className="text-lg font-bold text-gray-900">
-                              50
+                              {distribution?.skipped ?? 50}
                             </p>
                           </div>
                         </div>
@@ -310,13 +445,13 @@ export default function Static() {
                           <div className="text-3xl text-orange-600 mb-2">
                             5 тем
                           </div>
-                          <button  className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors"type="button"
-  onClick={() => {
-    document.querySelector('#needlearn')?.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }}>
+                          <button className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors" type="button"
+                            onClick={() => {
+                              document.querySelector('#needlearn')?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                              });
+                            }}>
                             Тренувати
                             зараз
                           </button>
@@ -324,399 +459,108 @@ export default function Static() {
                       </div>
                     </div>
                     <div id="needlearn" className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
-                      <h3 className="text-xl font-bold text-gray-900 mb-6" >
+                      <h3 className="text-xl font-bold text-gray-900 mb-6">
                         Поглиблений аналіз дисциплін
                       </h3>
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
                             <tr className="border-b border-gray-200">
-                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">
-                                ДИСЦИПЛІНА
-                              </th>
-                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">
-                                РІВЕНЬ ВОЛОДІННЯ
-                              </th>
-                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">
-                                СЛАБКІ МІСЦЯ
-                              </th>
-                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">
-                                СИЛЬНІ СТОРОНИ
-                              </th>
-                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">
-                                РЕКОМЕНДАЦІЯ
-                              </th>
-                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">
-                                ДІЯ
-                              </th>
+                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">ДИСЦИПЛІНА</th>
+                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">РІВЕНЬ ВОЛОДІННЯ</th>
+                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">СЛАБКІ МІСЦЯ</th>
+                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">СИЛЬНІ СТОРОНИ</th>
+                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">РЕКОМЕНДАЦІЯ</th>
+                              <th className="text-left py-4 px-4 text-sm font-semibold text-gray-600">ДІЯ</th>
                             </tr>
                           </thead>
                           <tbody>
-                            <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <svg className="lucide lucide-book-open w-5 h-5 text-indigo-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 7v14" />
-                                    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
-                                    </path>
-                                  </svg>
-                                  <span className="font-semibold text-gray-900">
-                                    Терапія
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1">
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div className="h-full bg-green-500" style={{ 'width': '92%' }} />
-                                    </div>
+                            {disciplines.map((disc, idx) => (
+                              <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td className="py-4 px-4">
+                                  <div className="flex items-center gap-3">
+                                    <svg className="lucide lucide-book-open w-5 h-5 text-indigo-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M12 7v14" />
+                                      <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
+                                      </path>
+                                    </svg>
+                                    <span className="font-semibold text-gray-900">{disc.discipline}</span>
                                   </div>
-                                  <span className="font-bold text-sm text-green-600">
-                                    92%
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m15 9-6 6" />
-                                    <path d="m9 9 6 6" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    3 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m9 12 2 2 4-4" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    15 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5">
-                                    </path>
-                                    <path d="M9 18h6" />
-                                    <path d="M10 22h4" />
-                                  </svg>
-                                  <span className="text-sm text-gray-700">
-                                    Інфекційні хвороби
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <NavLink 
-                                to="/dashboard/Selectvariant"
-                    onClick={() => {
-                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                        // или window.scrollTo(0, 0);
-                    }}
-                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
-                                  Переглянути →
-                                </NavLink>
-                              </td>
-                            </tr>
-                            <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <svg className="lucide lucide-book-open w-5 h-5 text-indigo-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 7v14" />
-                                    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
-                                    </path>
-                                  </svg>
-                                  <span className="font-semibold text-gray-900">
-                                    Хірургія
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1">
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div className="h-full bg-blue-500" style={{ 'width': '87%' }} />
-                                    </div>
+                                </td>
+                               <td className="py-4 px-4">
+  <div className="flex items-center gap-3">
+    <div className="flex-1">
+      <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"> {/* темний фон, без сірого та білого */}
+        <div
+          className="h-full rounded-full transition-all duration-500 ease-out"
+          style={{
+            width: `${disc.progress}%`,
+            backgroundColor:
+              disc.progress <= 30
+                ? '#a855f7'      // фіолетовий
+                : disc.progress <= 70
+                  ? '#eab308'    // жовтий
+                  : '#22c55e'    // зелений (як у твоєму початковому коді)
+          }}
+        />
+      </div>
+    </div>
+
+    <span
+      className="font-bold text-sm transition-colors duration-500"
+      style={{
+        color:
+          disc.progress <= 30
+            ? '#a855f7'      // той самий фіолетовий
+            : disc.progress <= 70
+              ? '#eab308'    // той самий жовтий
+              : '#22c55e'    // той самий зелений
+      }}
+    >
+      {disc.progress}%
+    </span>
+  </div>
+</td>
+                                <td className="py-4 px-4">
+                                  <div className="flex items-center gap-2">
+                                    <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                      <circle cx="12" cy="12" r="10" />
+                                      <path d="m15 9-6 6" />
+                                      <path d="m9 9 6 6" />
+                                    </svg>
+                                    <span className="text-gray-700">{disc.weak_questions} питань</span>
                                   </div>
-                                  <span className="font-bold text-sm text-blue-600">
-                                    87%
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m15 9-6 6" />
-                                    <path d="m9 9 6 6" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    5 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m9 12 2 2 4-4" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    12 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5">
-                                    </path>
-                                    <path d="M9 18h6" />
-                                    <path d="M10 22h4" />
-                                  </svg>
-                                  <span className="text-sm text-gray-700">
-                                    Травматологія
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                               <NavLink 
-                                to="/dashboard/Selectvariant"
-                    onClick={() => {
-                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                        // или window.scrollTo(0, 0);
-                    }}
-                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
-                                  Переглянути →
-                                </NavLink>
-                              </td>
-                            </tr>
-                            <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <svg className="lucide lucide-book-open w-5 h-5 text-indigo-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 7v14" />
-                                    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
-                                    </path>
-                                  </svg>
-                                  <span className="font-semibold text-gray-900">
-                                    Педіатрія
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1">
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div className="h-full bg-green-500" style={{ 'width': '94%' }} />
-                                    </div>
+                                </td>
+                                <td className="py-4 px-4">
+                                  <div className="flex items-center gap-2">
+                                   <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                                    <span className="text-gray-700">{disc.strong_questions} питань</span>
                                   </div>
-                                  <span className="font-bold text-sm text-green-600">
-                                    94%
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m15 9-6 6" />
-                                    <path d="m9 9 6 6" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    2 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m9 12 2 2 4-4" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    18 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5">
-                                    </path>
-                                    <path d="M9 18h6" />
-                                    <path d="M10 22h4" />
-                                  </svg>
-                                  <span className="text-sm text-gray-700">
-                                    Неонатологія
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                               <NavLink 
-                                to="/dashboard/Selectvariant"
-                    onClick={() => {
-                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                        // или window.scrollTo(0, 0);
-                    }}
-                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
-                                  Переглянути →
-                                </NavLink>
-                              </td>
-                            </tr>
-                            <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <svg className="lucide lucide-book-open w-5 h-5 text-indigo-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 7v14" />
-                                    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
-                                    </path>
-                                  </svg>
-                                  <span className="font-semibold text-gray-900">
-                                    Акушерство
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1">
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div className="h-full bg-yellow-500" style={{ 'width': '79%' }} />
-                                    </div>
+                                </td>
+                                <td className="py-4 px-4">
+                                  <div className="flex items-center gap-2">
+                                    <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+                                    <span className="text-sm text-gray-700">{disc.weak_topic || 'Все добре'}</span>
                                   </div>
-                                  <span className="font-bold text-sm text-yellow-600">
-                                    79%
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m15 9-6 6" />
-                                    <path d="m9 9 6 6" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    8 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m9 12 2 2 4-4" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    9 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5">
-                                    </path>
-                                    <path d="M9 18h6" />
-                                    <path d="M10 22h4" />
-                                  </svg>
-                                  <span className="text-sm text-gray-700">
-                                    Патологія вагітності
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                               <NavLink 
-                                to="/dashboard/Selectvariant"
-                    onClick={() => {
-                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                        // или window.scrollTo(0, 0);
-                    }}
-                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
-                                  Переглянути →
-                                </NavLink>
-                              </td>
-                            </tr>
-                            <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <svg className="lucide lucide-book-open w-5 h-5 text-indigo-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 7v14" />
-                                    <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
-                                    </path>
-                                  </svg>
-                                  <span className="font-semibold text-gray-900">
-                                    Фармакологія
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex-1">
-                                    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                      <div className="h-full bg-blue-500" style={{ 'width': '88%' }} />
-                                    </div>
-                                  </div>
-                                  <span className="font-bold text-sm text-blue-600">
-                                    88%
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m15 9-6 6" />
-                                    <path d="m9 9 6 6" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    4 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="m9 12 2 2 4-4" />
-                                  </svg>
-                                  <span className="text-gray-700">
-                                    14 питань
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                                <div className="flex items-center gap-2">
-                                  <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5">
-                                    </path>
-                                    <path d="M9 18h6" />
-                                    <path d="M10 22h4" />
-                                  </svg>
-                                  <span className="text-sm text-gray-700">
-                                    Кардіопрепарати
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-4">
-                               <NavLink 
-                                to="/dashboard/Selectvariant"
-                    onClick={() => {
-                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                        // или window.scrollTo(0, 0);
-                    }}
-                                className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
-                                  Переглянути →
-                                </NavLink>
-                              </td>
-                            </tr>
+                                </td>
+                                <td className="py-4 px-4">
+                                  <NavLink
+                                    to="/dashboard/Selectvariant"
+                                    onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })}
+                                    className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm"
+                                  >
+                                    Переглянути →
+                                  </NavLink>
+                                </td>
+                              </tr>
+                            ))}
+                            {disciplines.length === 0 && (
+                              <tr>
+                                <td colSpan={6} className="py-8 text-center text-gray-500">
+                                  Ще немає даних по дисциплінах
+                                </td>
+                              </tr>
+                            )}
                           </tbody>
                         </table>
                       </div>

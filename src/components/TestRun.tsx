@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient'; // ← імпортуй свій клієнт Supabase
 import './test-run.css';
@@ -8,6 +8,7 @@ type AnswerState = 'idle' | 'correct' | 'wrong';
 
 
 export default function TestRun() {
+  
   const [state, setState] = useState<AnswerState>('idle');
 
 
@@ -17,18 +18,16 @@ export default function TestRun() {
   const location = useLocation();
   const learnMode = location.state?.learningMode === true;   // або !!location.state?.learningMode
   const [loading, setLoading] = useState(true);
-  const [score, setScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
   // Твої реальні дані після тесту
-  const results = {
-
-    correct: 0,
-    incorrect: 0,
-    skipped: 0,
-    score: 0,
-  };
-
+const [results, setResults] = useState({
+  correct: 0,
+  incorrect: 0,
+  skipped: 0,
+  score: 0,           // або points
+});
+const startTimeRef = useRef(Date.now());
   const selectedDisciplines = (location.state?.selectedDisciplines as string[]) || [];
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const current = questions[currentQuestion] || {};
@@ -42,6 +41,98 @@ export default function TestRun() {
   ].filter(a => a.text); // тільки заповнені варіанти
 
   const correctIndex = ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(current.correct_option || '');
+  async function saveTestSession() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.warn("Користувач не авторизований");
+    return;
+  }
+
+  const discipline = questions[0]?.discipline || "Змішані дисципліни";
+  const moduleName = questions[0]?.module_name || null;
+  const krokType = questions[0]?.krok_type || "KROK-2";
+
+  const totalQuestions = questions.length;
+  const answered = results.correct + results.incorrect;
+  const skipped = totalQuestions - answered;
+
+  const durationSeconds = Math.round((Date.now() - startTimeRef.current) / 1000);
+
+  // 1. Збереження сесії тесту (insert)
+  const { error: sessionError } = await supabase
+    .from('user_test_sessions')
+    .insert({
+      user_id: user.id,
+      krok_type: krokType,
+      year: new Date().getFullYear(),
+      module_name: moduleName,
+      discipline: discipline,
+      questions_count: totalQuestions,
+      correct_count: results.correct,
+      wrong_count: results.incorrect,
+      skipped_count: skipped,
+      score_percent: totalQuestions > 0 ? Math.round((results.correct / totalQuestions) * 100) : 0,
+      duration_seconds: durationSeconds,
+      is_completed: true,
+    });
+
+  if (sessionError) {
+    console.error("Помилка збереження сесії:", sessionError.message);
+    return;
+  }
+
+  // 2. Оновлення прогресу по дисципліні (найбезпечніший спосіб)
+  // Спочатку перевіряємо, чи є запис
+  const { data: existing } = await supabase
+    .from('user_discipline_progress')
+    .select('questions_total, correct_count, wrong_count')
+    .eq('user_id', user.id)
+    .eq('discipline', discipline)
+    .maybeSingle();
+
+  const newTotal = (existing?.questions_total || 0) + totalQuestions;
+  const newCorrect = (existing?.correct_count || 0) + results.correct;
+  const newWrong = (existing?.wrong_count || 0) + results.incorrect;
+
+  const { error: progressError } = await supabase
+    .from('user_discipline_progress')
+    .upsert({
+      user_id: user.id,
+      discipline: discipline,
+      questions_total: newTotal,
+      correct_count: newCorrect,
+      wrong_count: newWrong,
+      last_attempt_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id, discipline' });
+
+  if (progressError) {
+    console.error("Помилка оновлення прогресу:", progressError.message);
+  }
+
+  // 3. Оновлення щоденних цілей (аналогічно)
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data: daily } = await supabase
+    .from('user_daily_goals')
+    .select('tests_completed, xp_earned')
+    .eq('user_id', user.id)
+    .eq('date', today)
+    .maybeSingle();
+
+  const newTestsCompleted = (daily?.tests_completed || 0) + 1;
+  const newXP = (daily?.xp_earned || 0) + results.score;
+
+  await supabase
+    .from('user_daily_goals')
+    .upsert({
+      user_id: user.id,
+      date: today,
+      tests_completed: newTestsCompleted,
+      xp_earned: newXP,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id, date' });
+}
 
   useEffect(() => {
     async function loadQuestions() {
@@ -96,20 +187,18 @@ export default function TestRun() {
   };
 
   const handleAnswer = (i: number) => {
-    setSelectedAnswer(i);
-    const isCorrect = i === correctIndex;
-    setState(i === correctIndex ? 'correct' : 'wrong');
-   
-    if (isCorrect) {
-      setScore(s => s + 5);
-      // Оновлюємо статистику
-      results.correct += 1;           // якщо results — звичайний об'єкт
-      // АБО
-      // setResults(r => ({ ...r, correct: r.correct + 1 }));  // якщо зробиш useState
-    } else {
-      results.incorrect += 1;
-    }
-  };
+  setSelectedAnswer(i);
+  const isCorrect = i === correctIndex;
+
+  setResults(prev => ({
+    ...prev,
+    correct: isCorrect ? prev.correct + 1 : prev.correct,
+    incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
+    score: isCorrect ? prev.score + 5 : prev.score,   // або інша логіка нарахування
+  }));
+
+  setState(isCorrect ? 'correct' : 'wrong');
+};
   const nextQuestion = () => {
     setState('idle');
     setCurrentQuestion(prev => prev + 1);
@@ -127,7 +216,7 @@ export default function TestRun() {
             </svg></span>
             <div>
               <p className="text-xs text-gray-600">Бали</p>
-              <p className="text-xl font-bold text-yellow-600">{score}</p>
+              <p className="text-xl font-bold text-yellow-600">{results.score}</p>
             </div>
           </div>
         </div>
@@ -215,8 +304,22 @@ export default function TestRun() {
 
           <div className="mt-8 flex gap-4 justify-center">
             <button
+  className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+  onClick={() => {
+    setResults(r => ({ ...r, skipped: r.skipped + 1 }));
+    setState('idle');
+    nextQuestion();
+  }}
+  disabled={state !== 'idle'}
+>
+  Пропустити
+</button>
+            <button
               className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-              onClick={() => setShowModal(true)}
+              onClick={async () => {
+    await saveTestSession();
+    setShowModal(true);
+  }}
 
             >
               Завершити
