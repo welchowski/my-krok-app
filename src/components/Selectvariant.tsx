@@ -30,7 +30,7 @@ export default function Selectvariant() {
                                     Відео-лекція
                                 </h3>
                                 <p className="text-sm text-gray-600">
-                                    45 хвилин
+                                    18:45 хвилин
                                 </p>
                             </div>
                         </div>
@@ -56,7 +56,7 @@ export default function Selectvariant() {
                                     Флеш-картки
                                 </h3>
                                 <p className="text-sm text-gray-600">
-                                    25 карток
+                                    5 карток
                                 </p>
                             </div>
                         </div>
@@ -86,7 +86,7 @@ export default function Selectvariant() {
                                 Лекція
                             </h3>
                             <p className="text-sm text-gray-600">
-                                6 питань
+                                5 питань
                             </p>
                         </div>
                     </div>
@@ -115,7 +115,7 @@ export default function Selectvariant() {
                                 Аудіо
                             </h3>
                             <p className="text-sm text-gray-600">
-                                6 питань
+                                18:45 хвилин
                             </p>
                         </div>
                     </div>
@@ -146,7 +146,7 @@ export default function Selectvariant() {
                                 Тести
                             </h3>
                             <p className="text-sm text-gray-600">
-                                6 питань
+                                5 питань
                             </p>
                         </div>
                     </div>
