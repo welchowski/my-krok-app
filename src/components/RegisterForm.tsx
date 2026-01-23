@@ -103,7 +103,6 @@ export default function RegisterForm() {
 
       // Успіх
       setSuccess(true);
-      alert('Реєстрація успішна! ');
       setSuccess(true);
       navigate('/dashboard');
 
