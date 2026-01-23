@@ -205,10 +205,10 @@ export default function Static() {
                           Розподіл відповідей
                         </h3>
                         {/* Великий графік з постійними проміжками та сильним закругленням */}
-                        <div className="mx-auto w-full max-w-[480px] bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-inner p-6">
-                          <div className="relative w-full h-480px flex items-center justify-center">
+                        <div className="mx-auto  max-w-[480px] bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-inner p-6">
+                          <div className="relative w-full h-280px flex items-center justify-center">
                             <MultiRingProgress
-                              size={480}
+                              size={260}
                               values={[
                                 { label: '', value:80, color: '#10b981' }, // зелений
                                 { label: 'В процесі', value: 15, color: '#eab308' }, // жовтий
