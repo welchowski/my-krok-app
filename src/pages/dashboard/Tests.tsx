@@ -2,12 +2,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
 
 export default function TestsSelection() {
   const [selected, setSelected] = useState(new Set<string>());
   const [groups, setGroups] = useState<{ title: string; disciplines: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
   const [userKrokType, setUserKrokType] = useState<string | null>(null);
+  const [learningMode, setLearningMode] = useState(false);
 
 
   useEffect(() => {
@@ -78,6 +81,55 @@ export default function TestsSelection() {
       <p className="text-sm text-gray-500 mb-6">
   {userKrokType || '—'} 
 </p>
+<div className="mb-6 flex items-center gap-3">
+  <label className="flex items-center gap-2 cursor-pointer select-none">
+    <div className="relative">
+      <input
+        type="checkbox"
+        className="sr-only"
+        checked={learningMode}
+        onChange={(e) => setLearningMode(e.target.checked)}
+      />
+      <div
+        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+          learningMode
+            ? 'bg-emerald-600 border-emerald-600'
+            : 'border-gray-300'
+        }`}
+      >
+        <svg
+          className={`lucide lucide-check w-3.5 h-3.5 text-white ${learningMode ? '' : 'hidden'}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </div>
+    </div>
+    <span className="text-base font-medium text-gray-800">Режим навчання</span>
+  </label>
+
+  {/* іконка з підказкою */}
+ 
+<div className="group relative inline-flex">
+ <button
+  data-tooltip-id="learn-mode"
+  data-tooltip-content="Ви отримуєте пояснення до кожного питання після відповіді."
+  className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 ..."
+>
+  ?
+</button><ReactTooltip
+  id="learn-mode"
+  place="bottom"
+  variant="dark"
+  className="!max-w-xs !rounded-lg !py-2.5 !px-3.5 !text-sm !opacity-95"
+/>
+
+  
+</div>
+</div>
       
       <div className="w-16 h-0.5 bg-emerald-600 mb-8" />
       <p className="text-sm text-gray-600 mb-8">Оберіть дисципліни</p>
@@ -160,7 +212,9 @@ export default function TestsSelection() {
         </span>
         <Link
           to="/dashboard/tests/run"
-          state={{ selectedDisciplines: [...selected] }}
+          state={{ selectedDisciplines: [...selected],
+            learningMode: learningMode
+           }}
           className={`flex-1 text-center py-3 rounded text-white font-medium ${
             count ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-400 cursor-not-allowed'
           }`}

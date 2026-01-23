@@ -30,7 +30,7 @@ export default function TestResultModal({
           <div className="flex items-center justify-between mb-1">
             <div>
               <h2 className="text-2xl font-bold">
-                Результати тесту
+                Результати
               </h2>
               <p className="text-emerald-100 text-sm mt-1">
                 Статистика проходження
