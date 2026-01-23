@@ -132,9 +132,10 @@ export default function Saved() {
                                         >
                                             Видалити
                                         </button>
-                                        <button className="px-5 py-2 bg-emerald-600 text-white rounded-lg">
+                                        <NavLink
+                          to="/dashboard/flashexample" className="px-5 py-2 bg-emerald-600 text-white rounded-lg  transition-all  over:scale-105">
                                             Пройти
-                                        </button>
+                                        </NavLink>
                                     </div>
                                 </div>
                                 <h2 className="text-xl font-semibold text-gray-800 mt-12">Флеш-картки по темам</h2>
