@@ -148,7 +148,7 @@ export default function Module() {
                         {/* Перша колонка (4 картки) */}
                         <NavLink
                           to="/dashboard/lectionRun"
-                          className="block transition-all h over:scale-105"
+                          className="block transition-all  hover:scale-105"
                         >
                           <div className="theme-card p-6 rounded-2xl bg-white shadow-lg">
                             <div className="flex items-center gap-4">
@@ -212,7 +212,7 @@ export default function Module() {
                         {/* Друга колонка (4 картки) */}
                         <NavLink
                           to="/dashboard/lectionRun"
-                          className="block transition-all h over:scale-105"
+                          className="block transition-all  hover:scale-105"
                         >
                           <div className="theme-card p-6 rounded-2xl bg-white shadow-lg">
                             <div className="flex items-center gap-4">
@@ -284,7 +284,7 @@ export default function Module() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <NavLink
                           to="/dashboard/VideoRun"
-                          className="block transition-all h over:scale-105"
+                          className="block transition-all  hover:scale-105"
                         >
                          
 
@@ -315,6 +315,10 @@ export default function Module() {
                         </span>
                       </div>
                     </div> </NavLink>
+                    <NavLink
+                          to="/dashboard/VideoRun"
+                          className="block transition-all  hover:scale-105"
+                        >
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Ішемічна хвороба серця" className="w-full h-48 object-cover"   src={heartImage} />
@@ -341,7 +345,11 @@ export default function Module() {
                           Інттерактивне
                         </span>
                       </div>
-                    </div>
+                    </div></NavLink>
+                    <NavLink
+                          to="/dashboard/VideoRun"
+                          className="block transition-all  hover:scale-105"
+                        >
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Структура головного мозку" className="w-full h-48 object-cover"   src={heartImage} />
@@ -369,6 +377,11 @@ export default function Module() {
                         </span>
                       </div>
                     </div>
+                    </NavLink>
+                    <NavLink
+                          to="/dashboard/VideoRun"
+                          className="block transition-all  hover:scale-105"
+                        >
                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
                       <div className="relative">
                         <img alt="Епілепсія та судомні стани" className="w-full h-48 object-cover"   src={heartImage} />
@@ -396,33 +409,8 @@ export default function Module() {
                         </span>
                       </div>
                     </div>
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden  transition-all">
-                      <div className="relative">
-                        <img alt="Скелетна система людини" className="w-full h-48 object-cover"   src={heartImage} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <div className="absolute top-4 right-4" />
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-500">
-                              <svg className="lucide lucide-play w-5 h-5 text-white ml-1" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="6 3 20 12 6 21 6 3" />
-                              </svg>
-                            </div>
-                            <span className="text-white text-sm">
-                              35:30
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-lg mb-2 text-gray-900">
-                          Скелетна система людини
-                        </h3>
-                        <span className="text-sm px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-                          Інттерактивне
-                        </span>
-                      </div>
-                    </div>
+                    </NavLink>
+                    
                   </div>
                 </div>
               )}
@@ -436,7 +424,7 @@ export default function Module() {
                         <div className="theme-card p-6 rounded-2xl bg-white shadow-lg hover:scale-105 transition-all">
                            <NavLink
                           to="/dashboard/AudioRun"
-                          className="block transition-all h over:scale-105"
+                          className="block transition-all "
                         >
                           <div className="flex items-center gap-4">
                             <div className="relative" />
@@ -468,7 +456,11 @@ export default function Module() {
                           </div>
                           </NavLink>
                         </div>
-                        <div className="theme-card p-6 rounded-2xl bg-white shadow-lg transition-all">
+                        <div className="theme-card p-6 rounded-2xl bg-white shadow-lg transition-all hover:scale-105">
+                          <NavLink
+                          to="/dashboard/AudioRun"
+                          className="block transition-all  "
+                        >
                           <div className="flex items-center gap-4">
                             <div className="relative" />
                             <div className="flex-1">
@@ -497,11 +489,17 @@ export default function Module() {
                               </div>
                             </div>
                           </div>
+
+                          </NavLink>
                         </div>
                       </div>
                       {/* Друга колонка (4 картки) */}
                       <div className="space-y-6">
-                        <div className="theme-card p-6 rounded-2xl bg-white shadow-lg transition-all">
+                        <div className="theme-card p-6 rounded-2xl bg-white shadow-lg transition-all hover:scale-105">
+                          <NavLink
+                          to="/dashboard/AudioRun"
+                          className="block transition-all  "
+                        >
                           <div className="flex items-center gap-4">
                             <div className="relative" />
                             <div className="flex-1">
@@ -530,8 +528,14 @@ export default function Module() {
                               </div>
                             </div>
                           </div>
+                           </NavLink>
                         </div>
-                        <div className="theme-card p-6 rounded-2xl bg-white shadow-lg transition-all">
+                       
+                        <div className="theme-card p-6 rounded-2xl bg-white shadow-lg transition-all hover:scale-105">
+                          <NavLink
+                          to="/dashboard/AudioRun"
+                          className="block transition-all  "
+                        >
                           <div className="flex items-center gap-4">
                             <div className="relative" />
                             <div className="flex-1">
@@ -560,6 +564,7 @@ export default function Module() {
                               </div>
                             </div>
                           </div>
+                          </NavLink>
                         </div>
                       </div>
                     </div>

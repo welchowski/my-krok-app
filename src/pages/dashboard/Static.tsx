@@ -58,7 +58,7 @@ export default function Static() {
                         <div className="flex items-center gap-5">
                           <div className="relative">
                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-2xl shadow-xl border-4 border-white">
-                              ОІ
+                              
                             </div>
                             <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full p-2 shadow-lg border-3 border-white">
                               <svg className="lucide lucide-crown w-4 h-4 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -70,20 +70,20 @@ export default function Static() {
                           </div>
                           <div>
                             <h1 className="text-2xl text-gray-900 mb-2">
-                              Олена Іваненко
+                              Ви
                             </h1>
                             <div className="flex items-center gap-2">
                               <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-lg text-sm shadow-md">
                                 💎 Рівень 12
                               </div>
                               <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                ⭐ 8450 балів
+                                ⭐ 2450 балів
                               </div>
                               <div className="bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
                                 🔥 23 днів
                               </div>
                               <div className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-3 py-1 rounded-lg text-sm shadow-md">
-                                🏆 #7
+                                🏆 #3
                               </div>
                             </div>
                           </div>
@@ -128,7 +128,7 @@ export default function Static() {
                               Тести
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              10/20
+                              16/20
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all" style={{ 'width': '80%' }} />
@@ -149,7 +149,7 @@ export default function Static() {
                               Картки
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              15/30
+                              25/30
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full transition-all" style={{ 'width': '83.3333%' }} />
@@ -170,7 +170,7 @@ export default function Static() {
                               Лекції
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              1/1
+                              1/2
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all" style={{ 'width': '50%' }} />
@@ -308,7 +308,7 @@ export default function Static() {
                             </div>
                           </div>
                           <div className="text-3xl text-orange-600 mb-2">
-                            8 тем
+                            5 тем
                           </div>
                           <button  className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors"type="button"
   onClick={() => {
@@ -385,7 +385,7 @@ export default function Static() {
                                     <path d="m9 9 6 6" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    3 теми
+                                    3 питань
                                   </span>
                                 </div>
                               </td>
@@ -396,7 +396,7 @@ export default function Static() {
                                     <path d="m9 12 2 2 4-4" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    15 тем
+                                    15 питань
                                   </span>
                                 </div>
                               </td>
@@ -458,7 +458,7 @@ export default function Static() {
                                     <path d="m9 9 6 6" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    5 теми
+                                    5 питань
                                   </span>
                                 </div>
                               </td>
@@ -469,7 +469,7 @@ export default function Static() {
                                     <path d="m9 12 2 2 4-4" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    12 тем
+                                    12 питань
                                   </span>
                                 </div>
                               </td>
@@ -531,7 +531,7 @@ export default function Static() {
                                     <path d="m9 9 6 6" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    2 теми
+                                    2 питань
                                   </span>
                                 </div>
                               </td>
@@ -542,7 +542,7 @@ export default function Static() {
                                     <path d="m9 12 2 2 4-4" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    18 тем
+                                    18 питань
                                   </span>
                                 </div>
                               </td>
@@ -604,7 +604,7 @@ export default function Static() {
                                     <path d="m9 9 6 6" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    8 теми
+                                    8 питань
                                   </span>
                                 </div>
                               </td>
@@ -615,7 +615,7 @@ export default function Static() {
                                     <path d="m9 12 2 2 4-4" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    9 тем
+                                    9 питань
                                   </span>
                                 </div>
                               </td>
@@ -677,7 +677,7 @@ export default function Static() {
                                     <path d="m9 9 6 6" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    4 теми
+                                    4 питань
                                   </span>
                                 </div>
                               </td>
@@ -688,7 +688,7 @@ export default function Static() {
                                     <path d="m9 12 2 2 4-4" />
                                   </svg>
                                   <span className="text-gray-700">
-                                    14 тем
+                                    14 питань
                                   </span>
                                 </div>
                               </td>

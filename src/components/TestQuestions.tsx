@@ -81,9 +81,9 @@ export default function TestQuestions() {
     const correctIndex = answers.findIndex(a => a.isCorrect);
 
     const getButtonClass = (i: number) => {
-        if (state === 'idle') return "hover:bg-gray-100 bg-white";
-        if (i === correctIndex) return "bg-green-100 border-green-400";
-        if (i === selected) return "bg-red-100 border-red-400";
+        if (state === 'idle') return "bg-blue-50 hover:bg-blue-100 hover:shadow-md hover:scale-[1.02] text-gray-900";
+        if (i === correctIndex) return "bg-green-500 text-white shadow-lg scale-102";
+        if (i === selected) return "bg-orange-400 text-white shadow-lg scale-101";
         return "bg-white opacity-70";
     };
 
