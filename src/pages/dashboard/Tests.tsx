@@ -213,7 +213,8 @@ export default function TestsSelection() {
         <Link
           to="/dashboard/tests/run"
           state={{ selectedDisciplines: [...selected],
-            learningMode: learningMode
+            learningMode: learningMode,
+            userKrokType: userKrokType
            }}
           className={`flex-1 text-center py-3 rounded text-white font-medium ${
             count ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-400 cursor-not-allowed'

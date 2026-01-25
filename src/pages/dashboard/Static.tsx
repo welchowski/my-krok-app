@@ -79,6 +79,7 @@ function MultiRingProgress({ values, size = 220 }: {
 }
 
 export default function Static() {
+  const [leaders, setLeaders] = useState<any[]>([]);
 
 
   const [profile, setProfile] = useState<ProfileStats | null>(null);
@@ -110,6 +111,7 @@ export default function Static() {
           .from('user_daily_goals')
           .select('xp_earned')
           .eq('user_id', user.id);
+
 
         const totalPoints = allDaily?.reduce((sum, d) => sum + (d.xp_earned || 0), 0) ?? 0;
         const level = Math.floor(totalPoints / 500) + 1; // наприклад, кожні 500 балів — новий рівень
@@ -148,6 +150,41 @@ export default function Static() {
           .gt('points', totalPoints); // скільки людей має більше балів
 
         const rank = (count ?? 0) + 1;
+        // Запит на топ-10 лідерів
+        const { data: leadersData } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name, points')
+          .order('points', { ascending: false })
+          .limit(5);
+
+console.log("=== ЛІДЕРБОРД З БАЗИ ===");
+console.log("Дані:", leadersData);
+console.log("Кількість рядків:", leadersData?.length ?? 0);
+        let leadersList = leadersData ?? [];
+
+        // Перевіряємо, чи є користувач у топ-10
+        const userInTop = leadersList.some((l) => l.id === user.id);
+
+        if (!userInTop) {
+          // Якщо ні, показуємо топ-9 + користувача на останньому місці
+          leadersList = [
+            ...leadersList.slice(0, 9),
+            {
+              id: user.id,
+              first_name: profileData?.first_name,
+              last_name: profileData?.last_name,
+              points: totalPoints, // totalPoints - це ваші бали з профілю
+            },
+          ];
+        }
+
+        // Додаємо поле isUser для кожного
+        leadersList = leadersList.map((l) => ({
+          ...l,
+          isUser: l.id === user.id,
+        }));
+
+        setLeaders(leadersList);
 
 
 
@@ -200,16 +237,26 @@ export default function Static() {
         // Прогрес по дисциплінах
         const { data: discData } = await supabase
           .from('user_discipline_progress')
-          .select('discipline, questions_total, correct_count, wrong_count')
+          .select('discipline, questions_total, correct_count, wrong_count, skipped_question_ids')
           .eq('user_id', user.id);
 
-        const formattedDisciplines = discData?.map(d => ({
-          discipline: d.discipline,
-          progress: d.questions_total > 0 ? Math.round((d.correct_count / d.questions_total) * 100) : 0,
-          weak_questions: d.wrong_count,
-          strong_questions: d.correct_count,
-          weak_topic: d.wrong_count > 0 ? "Потрібно повторити" : undefined,
-        })) ?? [];
+       const formattedDisciplines = discData?.map(d => {
+  const total = d.questions_total || 0;
+  const correct = d.correct_count || 0;
+  const wrong = d.wrong_count || 0;
+  const skipped = d.skipped_question_ids?.length || 0; // кількість пропущених питань
+
+  // Прогрес — тільки з правильних відповідей
+  const progress = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  return {
+    discipline: d.discipline,
+    progress,
+    weak_questions: wrong + skipped,          // слабкі = неправильні + пропущені
+    strong_questions: correct,
+    weak_topic: (wrong + skipped) > 0 ? "Потрібно повторити" : undefined,
+  };
+}) ?? [];
 
         setDisciplines(formattedDisciplines);
       } catch (err) {
@@ -738,104 +785,44 @@ export default function Static() {
                         </div>
                       </div>
                     </div>
+
+
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                       <div className="bg-white bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-5 h-5 text-orange-600">
-                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                            <path d="M4 22h16" />
-                            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                          </svg>
-                          <h3 className="text-lg">
-                            Топ студентів
-                          </h3>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-3 p-2 rounded-xl ">
-                            <div className="text-slate-400">
-                              1
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                              МК
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm">
-                                Марія К.
-                              </div>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              3240
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-2 rounded-xl ">
-                            <div className="text-slate-400">
-                              2
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                              ІП
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm">
-                                Іван П.
-                              </div>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              3120
-                            </div>
-                          </div>
-                          <div className=" bg-yellow-500 flex items-center gap-3 p-2 rounded-xl bg-white shadow-sm">
-                            <div className="text-slate-400">
-                              3
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                              ОС
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm">
-                                Ви
-                              </div>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              2450
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-2 rounded-xl ">
-                            <div className="text-slate-400">
-                              4
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                              АЛ
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm">
-                                Анна Л.
-                              </div>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              2380
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-2 rounded-xl ">
-                            <div className="text-slate-400">
-                              5
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-                              ПМ
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm">
-                                Петро М.
-                              </div>
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              2210
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+  <div className="flex items-center gap-2 mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-5 h-5 text-orange-600">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+      <path d="M4 22h16" />
+      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+    </svg>
+    <h3 className="text-lg">Таблиця лідерів</h3>
+  </div>
+  <div className="space-y-2">
+    {leaders.map((leader, idx) => {
+      const isUser = leader.isUser;
+      const position = isUser && idx === 9 ? profile?.rank ?? '?' : idx + 1; // Якщо користувач на останньому (поза топ-9), показуємо справжній ранг
+      const name = isUser ? 'Ви' : `${leader.first_name} ${leader.last_name?.[0] ?? ''}.`;
+      const initials = (leader.first_name?.[0] ?? '') + (leader.last_name?.[0] ?? '');
+      const rowClass = isUser ? 'bg-yellow-100 flex items-center gap-3 p-2 rounded-xl shadow-sm' : 'flex items-center gap-3 p-2 rounded-xl';
+
+      return (
+        <div key={idx} className={rowClass}>
+          <div className="text-slate-400">{position}</div>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
+            {initials.toUpperCase()}
+          </div>
+          <div className="flex-1">
+            <div className="text-sm">{name}</div>
+          </div>
+          <div className="text-sm text-slate-600">{leader.points}</div>
+        </div>
+      );
+    })}
+  </div>
+</div>
                       <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
                         <div className="flex items-center gap-3 mb-4">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-star w-6 h-6">
@@ -868,6 +855,10 @@ export default function Static() {
                         </div>
                       </div>
                     </div>
+
+
+
+
                   </div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                   </div>

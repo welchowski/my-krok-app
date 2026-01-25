@@ -8,7 +8,7 @@ type AnswerState = 'idle' | 'correct' | 'wrong';
 
 
 export default function TestRun() {
-  
+
   const [state, setState] = useState<AnswerState>('idle');
 
 
@@ -17,19 +17,20 @@ export default function TestRun() {
   // на початку компонента, після інших useState
   const location = useLocation();
   const learnMode = location.state?.learningMode === true;   // або !!location.state?.learningMode
+  const userKrokType = location.state?.userKrokType || null;
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   // Твої реальні дані після тесту
-const [results, setResults] = useState({
-  correct: 0,
-  incorrect: 0,
-  skipped: 0,
-  score: 0,
-});
+  const [results, setResults] = useState({
+    correct: 0,
+    incorrect: 0,
+    skipped: 0,
+    score: 0,
+  });
 
-const [score, setScore] = useState(0);
-const startTimeRef = useRef(Date.now());
+  const [score, setScore] = useState(0);
+  const startTimeRef = useRef(Date.now());
   const selectedDisciplines = (location.state?.selectedDisciplines as string[]) || [];
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const current = questions[currentQuestion] || {};
@@ -48,14 +49,11 @@ const startTimeRef = useRef(Date.now());
   if (!user) {
     console.warn("Користувач не авторизований");
     return;
-
-  
   }
 
   const discipline = questions[0]?.discipline || "Змішані дисципліни";
   const moduleName = questions[0]?.module_name || null;
-  const krokType = questions[0]?.krok_type || "KROK-2";
-
+  const krokType = userKrokType || questions[0]?.krok_type || "KROK-0";
   const totalQuestions = questions.length;
   const answered = results.correct + results.incorrect;
   const skipped = totalQuestions - answered;
@@ -67,7 +65,6 @@ const startTimeRef = useRef(Date.now());
     .from('user_test_sessions')
     .insert({
       user_id: user.id,
-      krok_type: krokType,
       year: new Date().getFullYear(),
       module_name: moduleName,
       discipline: discipline,
@@ -78,6 +75,7 @@ const startTimeRef = useRef(Date.now());
       score_percent: totalQuestions > 0 ? Math.round((results.correct / totalQuestions) * 100) : 0,
       duration_seconds: durationSeconds,
       is_completed: true,
+      krok_type: krokType,
     });
 
   if (sessionError) {
@@ -85,16 +83,30 @@ const startTimeRef = useRef(Date.now());
     return;
   }
 
-  // 2. Оновлення прогресу по дисципліні (найбезпечніший спосіб)
-  // Спочатку перевіряємо, чи є запис
+  // 2. Оновлення прогресу по дисципліні
   const { data: existing } = await supabase
     .from('user_discipline_progress')
-    .select('questions_total, correct_count, wrong_count')
+    .select('questions_total, correct_count, wrong_count, skipped_question_ids')
     .eq('user_id', user.id)
     .eq('discipline', discipline)
     .maybeSingle();
 
-  const newTotal = (existing?.questions_total || 0) + totalQuestions;
+  // ID питань у цій сесії (всі питання, які були показані до поточного включно)
+  const sessionIds = questions.slice(0, currentQuestion + 1).map(q => q.id.toString());
+
+  const currentSkipped = existing?.skipped_question_ids || [];
+
+  const answeredCount = results.correct + results.incorrect;
+
+  const newSkippedIds = currentSkipped.filter((id: any) => !sessionIds.includes(id));
+
+  // Якщо пропустив більше, ніж відповіли — додаємо різницю (останні питання вважаємо пропущеними)
+  const skippedInSession = sessionIds.length - answeredCount;
+  if (skippedInSession > 0) {
+    newSkippedIds.push(...sessionIds.slice(-skippedInSession));
+  }
+
+  const newTotal = (existing?.questions_total || 0) + sessionIds.length;
   const newCorrect = (existing?.correct_count || 0) + results.correct;
   const newWrong = (existing?.wrong_count || 0) + results.incorrect;
 
@@ -102,10 +114,11 @@ const startTimeRef = useRef(Date.now());
     .from('user_discipline_progress')
     .upsert({
       user_id: user.id,
-      discipline: discipline,
+      discipline,
       questions_total: newTotal,
       correct_count: newCorrect,
       wrong_count: newWrong,
+      skipped_question_ids: newSkippedIds,
       last_attempt_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id, discipline' });
@@ -136,28 +149,46 @@ const startTimeRef = useRef(Date.now());
       xp_earned: newXP,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id, date' });
-    
 }
 
 
   useEffect(() => {
     async function loadQuestions() {
-      let query = supabase.from('krok_tests').select('*').order('id');
+      if (!userKrokType && selectedDisciplines.length === 0) {
+        // захисний механізм — не завантажуємо взагалі, якщо нічого не відомо
+        setLoading(false);
+        return;
+      }
 
+      let query = supabase
+        .from('krok_tests')
+        .select('*')
+        .order('id', { ascending: true });
+
+      // Обов’язковий фільтр за типом КРОКу
+      if (userKrokType) {
+        query = query.eq('krok_type', userKrokType);
+      }
+
+      // Фільтр за дисциплінами, якщо обрано
       if (selectedDisciplines.length > 0) {
         query = query.in('discipline', selectedDisciplines);
       }
 
-      const { data, error } = await query.limit(50); // обмеження для прикладу
+      const { data, error } = await query.limit(50000);
 
-      if (!error && data) {
-        setQuestions(data);
+      if (error) {
+        console.error("Помилка завантаження питань:", error);
+        setLoading(false);
+        return;
       }
+
+      setQuestions(data || []);
       setLoading(false);
     }
 
     loadQuestions();
-  }, [selectedDisciplines]);
+  }, [selectedDisciplines, userKrokType]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Завантаження...</div>;
   if (questions.length === 0) return <div className="min-h-screen flex items-center justify-center">Питань не знайдено</div>;
@@ -193,24 +224,24 @@ const startTimeRef = useRef(Date.now());
   };
 
   const handleAnswer = (i: number) => {
-  setSelectedAnswer(i);
-  const isCorrect = i === correctIndex;
+    setSelectedAnswer(i);
+    const isCorrect = i === correctIndex;
 
-  setResults(prev => {
-    const newScore = isCorrect ? prev.score + 5 : prev.score;
+    setResults(prev => {
+      const newScore = isCorrect ? prev.score + 5 : prev.score;
 
-    setScore(newScore); // синхронізуємо з UI
+      setScore(newScore); // синхронізуємо з UI
 
-    return {
-      ...prev,
-      correct: isCorrect ? prev.correct + 1 : prev.correct,
-      incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
-      score: newScore,
-    };
-  });
+      return {
+        ...prev,
+        correct: isCorrect ? prev.correct + 1 : prev.correct,
+        incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
+        score: newScore,
+      };
+    });
 
-  setState(isCorrect ? 'correct' : 'wrong');
-};
+    setState(isCorrect ? 'correct' : 'wrong');
+  };
   const nextQuestion = () => {
     setState('idle');
     setCurrentQuestion(prev => prev + 1);
@@ -316,28 +347,28 @@ const startTimeRef = useRef(Date.now());
 
           <div className="mt-8 flex gap-4 justify-center">
             <button
-  className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-  onClick={() => {
-    setResults(r => ({ ...r, skipped: r.skipped + 1 }));
-    setState('idle');
-    nextQuestion();
-  }}
-  disabled={state !== 'idle'}
->
-  Пропустити
-</button>
+              className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+              onClick={() => {
+                setResults(r => ({ ...r, skipped: r.skipped + 1 }));
+                setState('idle');
+                nextQuestion();
+              }}
+              disabled={state !== 'idle'}
+            >
+              Пропустити
+            </button>
             <button
               className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
               onClick={async () => {
-    await saveTestSession();
-    setShowModal(true);
+                await saveTestSession();
+                setShowModal(true);
 
-    // Простий спосіб оновити профіль — перезавантажити сторінку
-    // window.location.reload();  // або краще — викликати fetch знов, але для простоти
+                // Простий спосіб оновити профіль — перезавантажити сторінку
+                // window.location.reload();  // або краще — викликати fetch знов, але для простоти
 
-    // Альтернатива: dispatch події, щоб профіль оновився автоматично
-    window.dispatchEvent(new Event('testCompleted'));
-  }}
+                // Альтернатива: dispatch події, щоб профіль оновився автоматично
+                window.dispatchEvent(new Event('testCompleted'));
+              }}
             >
               Завершити
             </button>
