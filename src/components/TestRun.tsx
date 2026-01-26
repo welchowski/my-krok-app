@@ -5,6 +5,13 @@ import './test-run.css';
 import TestResultModal from './TestResultModal';
 
 type AnswerState = 'idle' | 'correct' | 'wrong';
+interface DisciplineStats {
+  correct: number;
+  wrong: number;
+  total: number;
+  skippedIds: string[];
+  answeredIds: string[];
+}
 
 
 export default function TestRun() {
@@ -20,6 +27,7 @@ export default function TestRun() {
   const userKrokType = location.state?.userKrokType || null;
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [userSelected, setUserSelected] = useState<(number | null)[]>([]);
 
   // Твої реальні дані після тесту
   const [results, setResults] = useState({
@@ -45,115 +53,115 @@ export default function TestRun() {
 
   const correctIndex = ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(current.correct_option || '');
   async function saveTestSession() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    console.warn("Користувач не авторизований");
-    return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.warn("Користувач не авторизований");
+      return;
+    }
+
+    const uniqueDisciplines = [...new Set(questions.map(q => q.discipline))];
+    const disciplineName = uniqueDisciplines.length === 1 ? uniqueDisciplines[0] : 'Змішані дисципліни';
+    const krokType = userKrokType || questions[0]?.krok_type || "KROK-0";
+
+    const totalQuestions = questions.length;
+    const answeredCount = userSelected.filter(ans => ans !== null).length;
+    const skippedCount = totalQuestions - answeredCount;
+    const durationSeconds = Math.round((Date.now() - startTimeRef.current) / 1000);
+
+    // 1. Збереження сесії тесту (загальна, навіть якщо змішана)
+    await supabase
+      .from('user_test_sessions')
+      .insert({
+        user_id: user.id,
+        year: new Date().getFullYear(),
+        module_name: null,
+        discipline: disciplineName,
+        questions_count: totalQuestions,
+        correct_count: results.correct,
+        wrong_count: results.incorrect,
+        skipped_count: skippedCount,
+        score_percent: totalQuestions > 0 ? Math.round((results.correct / totalQuestions) * 100) : 0,
+        duration_seconds: durationSeconds,
+        is_completed: true,
+        krok_type: krokType,
+      });
+
+    // 2. Групуємо результати по дисциплінах
+    const disciplineStats = questions.reduce<Record<string, DisciplineStats>>((acc, q, idx) => {
+      const disc = q.discipline || 'Змішані дисципліни';
+      if (!acc[disc]) {
+        acc[disc] = { correct: 0, wrong: 0, total: 0, skippedIds: [], answeredIds: [] };
+      }
+      acc[disc].total++;
+      const selected = userSelected[idx];
+      if (selected !== null) {
+        const correctIdx = ['A', 'B', 'C', 'D', 'E', 'F'].indexOf(q.correct_option || '');
+        if (selected === correctIdx) acc[disc].correct++;
+        else acc[disc].wrong++;
+        acc[disc].answeredIds.push(q.id.toString());
+      } else {
+        acc[disc].skippedIds.push(q.id.toString());
+      }
+      return acc;
+    }, {} as Record<string, { correct: number; wrong: number; total: number; skippedIds: string[]; answeredIds: string[] }>);
+
+    // 3. Оновлюємо прогрес КІЖНОЇ дисципліни окремо
+    for (const [disc, stats] of Object.entries(disciplineStats)) {
+      const { data: existing } = await supabase
+        .from('user_discipline_progress')
+        .select('skipped_question_ids')
+        .eq('user_id', user.id)
+        .eq('discipline', disc)
+        .maybeSingle();
+
+      let newSkippedIds: string[] = existing?.skipped_question_ids || [];
+      // Видаляємо ті, на які цього разу відповіли
+      newSkippedIds = newSkippedIds.filter(id => !stats.answeredIds.includes(id));
+      // Додаємо нові пропущені
+      newSkippedIds = [...new Set([...newSkippedIds, ...stats.skippedIds])];
+
+      await supabase
+        .from('user_discipline_progress')
+        .upsert({
+          user_id: user.id,
+          discipline: disc,
+          questions_total: stats.total,
+          correct_count: stats.correct,
+          wrong_count: stats.wrong,
+          skipped_question_ids: newSkippedIds,
+          last_attempt_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,discipline' });
+    }
+
+    // 4. Daily goals – залишається без змін
+    const today = new Date().toISOString().split('T')[0];
+    const { data: daily } = await supabase
+      .from('user_daily_goals')
+      .select('tests_completed, xp_earned')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .maybeSingle();
+
+    const newTestsCompleted = (daily?.tests_completed || 0) + 1;
+    const newXP = (daily?.xp_earned || 0) + results.score;
+
+    await supabase
+      .from('user_daily_goals')
+      .upsert({
+        user_id: user.id,
+        date: today,
+        tests_completed: newTestsCompleted,
+        xp_earned: newXP,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id, date' });
   }
 
-  const discipline = questions[0]?.discipline || "Змішані дисципліни";
-  const moduleName = questions[0]?.module_name || null;
-  const krokType = userKrokType || questions[0]?.krok_type || "KROK-0";
-  const totalQuestions = questions.length;
-  const answered = results.correct + results.incorrect;
-  const skipped = totalQuestions - answered;
-
-  const durationSeconds = Math.round((Date.now() - startTimeRef.current) / 1000);
-
-  // 1. Збереження сесії тесту (insert)
-  const { error: sessionError } = await supabase
-    .from('user_test_sessions')
-    .insert({
-      user_id: user.id,
-      year: new Date().getFullYear(),
-      module_name: moduleName,
-      discipline: discipline,
-      questions_count: totalQuestions,
-      correct_count: results.correct,
-      wrong_count: results.incorrect,
-      skipped_count: skipped,
-      score_percent: totalQuestions > 0 ? Math.round((results.correct / totalQuestions) * 100) : 0,
-      duration_seconds: durationSeconds,
-      is_completed: true,
-      krok_type: krokType,
-    });
-
-  if (sessionError) {
-    console.error("Помилка збереження сесії:", sessionError.message);
-    return;
-  }
-
-  // 2. Оновлення прогресу по дисципліні
-  const { data: existing } = await supabase
-    .from('user_discipline_progress')
-    .select('questions_total, correct_count, wrong_count, skipped_question_ids')
-    .eq('user_id', user.id)
-    .eq('discipline', discipline)
-    .maybeSingle();
-
-  // ID питань у цій сесії (всі питання, які були показані до поточного включно)
-  const sessionIds = questions.slice(0, currentQuestion + 1).map(q => q.id.toString());
-
-  const currentSkipped = existing?.skipped_question_ids || [];
-
-  const answeredCount = results.correct + results.incorrect;
-
-  const newSkippedIds = currentSkipped.filter((id: any) => !sessionIds.includes(id));
-
-  // Якщо пропустив більше, ніж відповіли — додаємо різницю (останні питання вважаємо пропущеними)
-  const skippedInSession = sessionIds.length - answeredCount;
-  if (skippedInSession > 0) {
-    newSkippedIds.push(...sessionIds.slice(-skippedInSession));
-  }
-
-  const newTotal = (existing?.questions_total || 0) + sessionIds.length;
-  const newCorrect = (existing?.correct_count || 0) + results.correct;
-  const newWrong = (existing?.wrong_count || 0) + results.incorrect;
-
-  const { error: progressError } = await supabase
-    .from('user_discipline_progress')
-    .upsert({
-      user_id: user.id,
-      discipline,
-      questions_total: newTotal,
-      correct_count: newCorrect,
-      wrong_count: newWrong,
-      skipped_question_ids: newSkippedIds,
-      last_attempt_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id, discipline' });
-
-  if (progressError) {
-    console.error("Помилка оновлення прогресу:", progressError.message);
-  }
-
-  // 3. Оновлення щоденних цілей (аналогічно)
-  const today = new Date().toISOString().split('T')[0];
-
-  const { data: daily } = await supabase
-    .from('user_daily_goals')
-    .select('tests_completed, xp_earned')
-    .eq('user_id', user.id)
-    .eq('date', today)
-    .maybeSingle();
-
-  const newTestsCompleted = (daily?.tests_completed || 0) + 1;
-  const newXP = (daily?.xp_earned || 0) + results.score;
-
-  await supabase
-    .from('user_daily_goals')
-    .upsert({
-      user_id: user.id,
-      date: today,
-      tests_completed: newTestsCompleted,
-      xp_earned: newXP,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'user_id, date' });
-}
 
 
   useEffect(() => {
     async function loadQuestions() {
+
       if (!userKrokType && selectedDisciplines.length === 0) {
         // захисний механізм — не завантажуємо взагалі, якщо нічого не відомо
         setLoading(false);
@@ -184,7 +192,9 @@ export default function TestRun() {
       }
 
       setQuestions(data || []);
+      setUserSelected(new Array(data?.length || 0).fill(null));
       setLoading(false);
+
     }
 
     loadQuestions();
@@ -224,24 +234,34 @@ export default function TestRun() {
   };
 
   const handleAnswer = (i: number) => {
+    if (state !== 'idle') return;
+
     setSelectedAnswer(i);
-    const isCorrect = i === correctIndex;
 
-    setResults(prev => {
-      const newScore = isCorrect ? prev.score + 5 : prev.score;
-
-      setScore(newScore); // синхронізуємо з UI
-
-      return {
-        ...prev,
-        correct: isCorrect ? prev.correct + 1 : prev.correct,
-        incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
-        score: newScore,
-      };
+    // Записуємо, який варіант обрав користувач для цього питання
+    setUserSelected(prev => {
+      const updated = [...prev];
+      updated[currentQuestion] = i;
+      return updated;
     });
 
+    const isCorrect = i === correctIndex;
+
+    setResults(prev => ({
+      ...prev,
+      correct: isCorrect ? prev.correct + 1 : prev.correct,
+      incorrect: !isCorrect ? prev.incorrect + 1 : prev.incorrect,
+      score: prev.score + (isCorrect ? 5 : 0),
+    }));
+
+    setScore(prev => prev + (isCorrect ? 5 : 0));
     setState(isCorrect ? 'correct' : 'wrong');
   };
+
+
+
+
+
   const nextQuestion = () => {
     setState('idle');
     setCurrentQuestion(prev => prev + 1);
@@ -251,7 +271,11 @@ export default function TestRun() {
     <div className="min-h-screen  bg_base  to-gray-100 py-12 px-4">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl text-gray-900">{current.module_name || 'Загальна анатомія та фізіологія'}</h1>
+          <h1 className="text-3xl text-gray-900">
+            {current.module_name
+              ? `${current.module_name} • ${current.discipline || '—'}`
+              : current.discipline || 'Загальна анатомія та фізіологія'}
+          </h1>
           <div className="flex items-center gap-2 bg-yellow-50 px-4 py-2 rounded-lg border-2 border-yellow-300">
             <span className="text-2xl"> <svg className="lucide lucide-zap w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z">
@@ -349,7 +373,6 @@ export default function TestRun() {
             <button
               className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
               onClick={() => {
-                setResults(r => ({ ...r, skipped: r.skipped + 1 }));
                 setState('idle');
                 nextQuestion();
               }}
@@ -360,13 +383,18 @@ export default function TestRun() {
             <button
               className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
               onClick={async () => {
+                // Правильно рахуємо skipped (включаючи поточне питання і всі майбутні)
+                const answeredCount = userSelected.filter(ans => ans !== null).length;
+                const actualSkipped = questions.length - answeredCount;
+
+                // Оновлюємо results.skipped, щоб модалка показувала правильну кількість
+                setResults(prev => ({
+                  ...prev,
+                  skipped: actualSkipped,
+                }));
+
                 await saveTestSession();
                 setShowModal(true);
-
-                // Простий спосіб оновити профіль — перезавантажити сторінку
-                // window.location.reload();  // або краще — викликати fetch знов, але для простоти
-
-                // Альтернатива: dispatch події, щоб профіль оновився автоматично
                 window.dispatchEvent(new Event('testCompleted'));
               }}
             >

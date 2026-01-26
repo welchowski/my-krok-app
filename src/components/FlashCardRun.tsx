@@ -18,52 +18,55 @@ export default function FlashCard() {
 
   const location = useLocation()
   const selected = (location.state?.selectedDisciplines as string[]) || []
+  const krokType = location.state?.krokType as string | null;
 useEffect(() => {
   async function load() {
-    setLoading(true) 
-    console.log("Обрані дисципліни для FlashCard:", selected);
-    console.log("Кількість обраних:", selected.length)          // на всяк випадок
+    setLoading(true);
+    console.log("Обрані дисципліни:", selected);
+    console.log("KROK Type:", krokType);
 
     try {
-      console.log("Починаю запит...")
-
       let query = supabase
         .from('krok_tests')
-        .select('id, question, explanation')
-        .order('id')
+        .select('id, question, explanation')  // можна додати image_question, image_answer пізніше
+        .order('id');
 
-     if (selected.length > 0) {
-  query = query.or(
-    selected
-      .map(d => `discipline.eq."${d.trim()}"`)  // eq замість in
-      .join(',')
-  );
-}
-      const { data, error } = await query
-
-      console.log("Результат запиту:", { data, error })
-
-      if (error) {
-        console.error("Помилка Supabase:", error)
-        // тут можна показати повідомлення користувачу
-      } else {
-        setCards(
-          data?.map(q => ({
-            id: q.id,
-            question: q.question,
-            explanation: q.explanation || 'Немає пояснення',
-          })) ?? []
-        )
+      // Обов’язковий фільтр за типом КРОК, якщо є
+      if (krokType) {
+        query = query.eq('krok_type', krokType);
       }
+
+      // Фільтр за дисциплінами, якщо обрано
+      if (selected.length > 0) {
+        query = query.or(
+          selected
+            .map(d => `discipline.eq."${d.trim()}"`)
+            .join(',')
+        );
+      }
+
+      const { data, error } = await query;
+
+      console.log("Запит виконано:", { dataLength: data?.length, error });
+
+      if (error) throw error;
+
+      setCards(
+        data?.map(q => ({
+          id: q.id,
+          question: q.question,
+          explanation: q.explanation || 'Немає пояснення',
+        })) ?? []
+      );
     } catch (err) {
-      console.error("Несподівана помилка:", err)
+      console.error("Помилка завантаження флеш-карток:", err);
     } finally {
-      setLoading(false)          // ← завжди! незалежно від результату
+      setLoading(false);
     }
   }
 
-  load()
-}, [selected])                   // або [] якщо хочеш тільки один раз
+  load();
+}, [selected, krokType]);   // ← додали krokType в залежності                   // або [] якщо хочеш тільки один раз
 
   if (loading) return <div className="min-h-screen grid place-items-center">Завантаження...</div>
   if (!cards.length) return <div className="min-h-screen grid place-items-center">Карток немає</div>

@@ -80,11 +80,12 @@ function MultiRingProgress({ values, size = 220 }: {
 
 export default function Static() {
   const [leaders, setLeaders] = useState<any[]>([]);
+  const [weakCount, setWeakCount] = useState(0);
 
 
   const [profile, setProfile] = useState<ProfileStats | null>(null);
   const [dailyGoals, setDailyGoals] = useState<DailyGoal | null>(null);
-  const [distribution, setDistribution] = useState<AnswerDistribution | null>(null);
+  const [distribution] = useState<AnswerDistribution | null>(null);
   const [disciplines, setDisciplines] = useState<DisciplineProgress[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -102,10 +103,7 @@ export default function Static() {
           .single();
 
         // Розрахунок статистики (можна винести в окремий запит або view)
-        const { data: sessions } = await supabase
-          .from('user_test_sessions')
-          .select('correct_count, wrong_count, skipped_count, score_percent')
-          .eq('user_id', user.id);
+       
 
         const { data: allDaily } = await supabase
           .from('user_daily_goals')
@@ -157,9 +155,9 @@ export default function Static() {
           .order('points', { ascending: false })
           .limit(5);
 
-console.log("=== ЛІДЕРБОРД З БАЗИ ===");
-console.log("Дані:", leadersData);
-console.log("Кількість рядків:", leadersData?.length ?? 0);
+        console.log("=== ЛІДЕРБОРД З БАЗИ ===");
+        console.log("Дані:", leadersData);
+        console.log("Кількість рядків:", leadersData?.length ?? 0);
         let leadersList = leadersData ?? [];
 
         // Перевіряємо, чи є користувач у топ-10
@@ -186,11 +184,6 @@ console.log("Кількість рядків:", leadersData?.length ?? 0);
 
         setLeaders(leadersList);
 
-
-
-        const totalCorrect = sessions?.reduce((sum, s) => sum + (s.correct_count || 0), 0) ?? 0;
-        const totalWrong = sessions?.reduce((sum, s) => sum + (s.wrong_count || 0), 0) ?? 0;
-        const totalSkipped = sessions?.reduce((sum, s) => sum + (s.skipped_count || 0), 0) ?? 0;
 
 
         // Рівень, бали, стрік — для прикладу захардкодимо, пізніше розрахуємо
@@ -228,37 +221,53 @@ console.log("Кількість рядків:", leadersData?.length ?? 0);
         });
 
         // Розподіл відповідей
-        setDistribution({
-          correct: totalCorrect,
-          wrong: totalWrong,
-          skipped: totalSkipped,
-        });
+
 
         // Прогрес по дисциплінах
-        const { data: discData } = await supabase
+        const { data: discData, error } = await supabase
           .from('user_discipline_progress')
           .select('discipline, questions_total, correct_count, wrong_count, skipped_question_ids')
           .eq('user_id', user.id);
 
-       const formattedDisciplines = discData?.map(d => {
-  const total = d.questions_total || 0;
-  const correct = d.correct_count || 0;
-  const wrong = d.wrong_count || 0;
-  const skipped = d.skipped_question_ids?.length || 0; // кількість пропущених питань
+        if (error) {
+          console.error("Помилка при отриманні дисциплин:", error);
+          // можна поставити дефолтні значення або показати повідомлення
+        }
 
-  // Прогрес — тільки з правильних відповідей
-  const progress = total > 0 ? Math.round((correct / total) * 100) : 0;
+        // сумуємо по всіх дисциплінах
+        let totalCorrect = 0;
+        let totalWrong = 0;
+        let totalSkipped = 0;
 
-  return {
-    discipline: d.discipline,
-    progress,
-    weak_questions: wrong + skipped,          // слабкі = неправильні + пропущені
-    strong_questions: correct,
-    weak_topic: (wrong + skipped) > 0 ? "Потрібно повторити" : undefined,
-  };
-}) ?? [];
+        discData?.forEach(row => {
+          totalCorrect += row.correct_count || 0;
+          totalWrong += row.wrong_count || 0;
+          totalSkipped += (row.skipped_question_ids?.length || 0);
+        });
+
+        
+
+        const formattedDisciplines = discData?.map(d => {
+          const total = d.questions_total ?? 0;
+          const correct = d.correct_count ?? 0;
+
+          const progress = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+          return {
+            discipline: d.discipline || 'Невідома дисципліна',
+            progress,
+            weak_questions: d.wrong_count ?? 0,
+            strong_questions: correct,
+            weak_topic: (d.wrong_count ?? 0) > 0 ? "Потрібно повторити" : undefined,
+          };
+        }) ?? [];
 
         setDisciplines(formattedDisciplines);
+        const weakDisciplinesCount = formattedDisciplines.filter(
+          d => d.strong_questions < 5
+        ).length;
+
+        setWeakCount(weakDisciplinesCount);
       } catch (err) {
         console.error('Помилка завантаження профілю:', err);
       } finally {
@@ -541,7 +550,7 @@ console.log("Кількість рядків:", leadersData?.length ?? 0);
                             </div>
                           </div>
                           <div className="text-3xl text-orange-600 mb-2">
-                            5 тем
+                           {weakCount} {weakCount === 1 ? 'тема' : 'тем'}
                           </div>
                           <button className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors" type="button"
                             onClick={() => {
@@ -621,24 +630,71 @@ console.log("Кількість рядків:", leadersData?.length ?? 0);
                                 </td>
                                 <td className="py-4 px-4">
                                   <div className="flex items-center gap-2">
-                                    <svg className="lucide lucide-circle-x w-4 h-4 text-red-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <svg
+                                      className={`lucide lucide-circle-x w-4 h-4 ${disc.strong_questions >= 5 ? 'text-green-500' : 'text-yellow-500'
+                                        }`}
+                                      fill="none"
+                                      height="24"
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                      width="24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
                                       <circle cx="12" cy="12" r="10" />
                                       <path d="m15 9-6 6" />
                                       <path d="m9 9 6 6" />
                                     </svg>
-                                    <span className="text-gray-700">{disc.weak_questions} питань</span>
+                                    <span className="text-gray-700">
+                                      {disc.weak_questions} питань
+                                    </span>
                                   </div>
                                 </td>
                                 <td className="py-4 px-4">
                                   <div className="flex items-center gap-2">
-                                    <svg className="lucide lucide-circle-check w-4 h-4 text-green-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
-                                    <span className="text-gray-700">{disc.strong_questions} питань</span>
+                                    <svg
+                                      className={`lucide lucide-circle-check w-4 h-4 ${disc.strong_questions === 0 ? 'text-yellow-500' : 'text-green-500'
+                                        }`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle cx="12" cy="12" r="10" />
+                                      <path d="m9 12 2 2 4-4" />
+                                    </svg>
+                                    <span className="text-gray-700">
+                                      {disc.strong_questions === 0
+                                        ? 'Немає сильних питань'
+                                        : `${disc.strong_questions} питань`}
+                                    </span>
                                   </div>
                                 </td>
                                 <td className="py-4 px-4">
                                   <div className="flex items-center gap-2">
-                                    <svg className="lucide lucide-lightbulb w-4 h-4 text-amber-500" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
-                                    <span className="text-sm text-gray-700">{disc.weak_topic || 'Все добре'}</span>
+                                    <svg
+                                      className={`lucide lucide-lightbulb w-4 h-4 ${disc.strong_questions >= 5
+                                          ? 'text-green-500'
+                                          : 'text-amber-500'
+                                        }`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+                                      <path d="M9 18h6" />
+                                      <path d="M10 22h4" />
+                                    </svg>
+                                    <span className="text-sm text-gray-700">
+                                      {disc.strong_questions >= 5
+                                        ? 'Все добре'
+                                        : disc.strong_questions === 0
+                                          ? 'Потрібно пройти знову'
+                                          : 'Потрібно покращити'}
+                                    </span>
                                   </div>
                                 </td>
                                 <td className="py-4 px-4">
@@ -789,40 +845,40 @@ console.log("Кількість рядків:", leadersData?.length ?? 0);
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                       <div className="bg-white bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6">
-  <div className="flex items-center gap-2 mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-5 h-5 text-orange-600">
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-      <path d="M4 22h16" />
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-    </svg>
-    <h3 className="text-lg">Таблиця лідерів</h3>
-  </div>
-  <div className="space-y-2">
-    {leaders.map((leader, idx) => {
-      const isUser = leader.isUser;
-      const position = isUser && idx === 9 ? profile?.rank ?? '?' : idx + 1; // Якщо користувач на останньому (поза топ-9), показуємо справжній ранг
-      const name = isUser ? 'Ви' : `${leader.first_name} ${leader.last_name?.[0] ?? ''}.`;
-      const initials = (leader.first_name?.[0] ?? '') + (leader.last_name?.[0] ?? '');
-      const rowClass = isUser ? 'bg-yellow-100 flex items-center gap-3 p-2 rounded-xl shadow-sm' : 'flex items-center gap-3 p-2 rounded-xl';
+                        <div className="flex items-center gap-2 mb-4">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-5 h-5 text-orange-600">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                            <path d="M4 22h16" />
+                            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+                            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                          </svg>
+                          <h3 className="text-lg">Таблиця лідерів</h3>
+                        </div>
+                        <div className="space-y-2">
+                          {leaders.map((leader, idx) => {
+                            const isUser = leader.isUser;
+                            const position = isUser && idx === 9 ? profile?.rank ?? '?' : idx + 1; // Якщо користувач на останньому (поза топ-9), показуємо справжній ранг
+                            const name = isUser ? 'Ви' : `${leader.first_name} ${leader.last_name?.[0] ?? ''}.`;
+                            const initials = (leader.first_name?.[0] ?? '') + (leader.last_name?.[0] ?? '');
+                            const rowClass = isUser ? 'bg-yellow-100 flex items-center gap-3 p-2 rounded-xl shadow-sm' : 'flex items-center gap-3 p-2 rounded-xl';
 
-      return (
-        <div key={idx} className={rowClass}>
-          <div className="text-slate-400">{position}</div>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
-            {initials.toUpperCase()}
-          </div>
-          <div className="flex-1">
-            <div className="text-sm">{name}</div>
-          </div>
-          <div className="text-sm text-slate-600">{leader.points}</div>
-        </div>
-      );
-    })}
-  </div>
-</div>
+                            return (
+                              <div key={idx} className={rowClass}>
+                                <div className="text-slate-400">{position}</div>
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs">
+                                  {initials.toUpperCase()}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="text-sm">{name}</div>
+                                </div>
+                                <div className="text-sm text-slate-600">{leader.points}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                       <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
                         <div className="flex items-center gap-3 mb-4">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-star w-6 h-6">

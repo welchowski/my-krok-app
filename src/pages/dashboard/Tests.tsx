@@ -219,7 +219,15 @@ export default function TestsSelection() {
           className={`flex-1 text-center py-3 rounded text-white font-medium ${
             count ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-400 cursor-not-allowed'
           }`}
-          onClick={e => !count && e.preventDefault()}
+          onClick={(e) => {
+    if (!count) {
+      e.preventDefault();
+      return;
+    }
+    // скролимо вгору перед переходом
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    // або document.body.scrollTop = 0; document.documentElement.scrollTop = 0;
+  }}
         >
           Пройти тестування →
         </Link>
