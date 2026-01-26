@@ -291,7 +291,7 @@ export default function TestRun() {
 
         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
           {/* Панель з кнопками Зберегти / Прогрес / Підтримка */}
-          <div className="flex justify-between items-center p-4 border-b-2 border-gray-100 gap-6 pb-4">
+          <div className="flex justify-between items-center p-4 pt-0 border-b-2 border-gray-100 gap-6">
             {/* Зберегти */}
             <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
               <svg className="lucide lucide-bookmark w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

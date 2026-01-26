@@ -1,0 +1,45 @@
+/* audio-player.css */
+.audio-player-wrapper {
+  padding: 1rem;
+  background: linear-gradient(135deg, #fff023, #45ec77);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(207, 148, 148, 0.5);
+  backdrop-filter: blur(10px);
+  border: 0.5px solid rgb(255, 255, 255);
+  max-width: 500px;
+  margin: 1rem auto;
+}
+
+.modern-audio-player {
+  width: 100%;
+  height: 80px;
+  background: transparent !important;
+  color: #e0e0ff;
+}
+
+.modern-audio-player::-webkit-media-controls-panel {
+  background: rgba(20, 20, 40, 0.7) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid rgba(231, 40, 6, 0.1) !important;
+  box-shadow: 0 4px 30px rgba(101, 240, 147, 0.4);
+}
+
+.modern-audio-player::-webkit-media-controls-play-button,
+.modern-audio-player::-webkit-media-controls-volume-slider,
+.modern-audio-player::-webkit-media-controls-current-time-display,
+.modern-audio-player::-webkit-media-controls-time-remaining-display {
+  filter: brightness(1.1) drop-shadow(0 0 4px rgb(2, 155, 66));
+}
+
+/* Прогрес бар — акцентний колір */
+.modern-audio-player::-webkit-media-controls-timeline {
+  background: rgba(216, 202, 7, 0.08) !important;
+}
+.modern-audio-player::-webkit-media-controls-timeline::-webkit-media-slider-thumb {
+  background: #5bc207 !important;
+  box-shadow: 0 0 12px #a0801680;
+}
+.modern-audio-player::-webkit-media-controls-timeline::-webkit-media-slider-container {
+  background: linear-gradient(to right, #d1ff04 var(--played), transparent var(--played)) !important;
+}

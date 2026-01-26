@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import ScrollToTop from './components/ScrollToTop';   
 import HomePage from './pages/landing/HomePage';
 import LoginPage from './pages/login/LoginPage';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -18,9 +20,14 @@ import Testhexample from './components/Testexample'
 import Selectvariant from './components/Selectvariant'
 
 
+
+
+
+
 function App() {
   return (
     <BrowserRouter>
+    <ScrollToTop/>
       <Routes>
         <Route path="/" element={<HomePage />} />   {/* ← саме тут підключається */}
         <Route path="/login" element={<LoginPage />} />

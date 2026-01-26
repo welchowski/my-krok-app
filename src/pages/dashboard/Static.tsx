@@ -297,7 +297,7 @@ export default function Static() {
               <div className="min-h-screen bg-white">
                 <div className="min-h-screen bg-gradient-to-br bg_base from-slate-50 via-blue-50 to-indigo-50 p-6 pt-20">
                   <div className="max-w-[1600px] mx-auto space-y-6">
-                    <div className="bg-white rounded-3xl p-3 shadow-2xl border-4 border-purple-300">
+                    <div className="bg-white rounded-3xl p-3 shadow-2xl border-1 border-purple-300">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-5">
                           <div className="relative">
@@ -345,7 +345,7 @@ export default function Static() {
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white rounded-2xl p-3 shadow-xl border-2 border-pink-200">
+                    <div className="bg-white rounded-2xl p-3 shadow-xl border-1 border-yellow-300">
                       <h3 className="text-xl text-gray-900 mb-4 flex items-center gap-2">
                         <svg className="lucide lucide-sparkles w-6 h-6 text-pink-600" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                           <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z">

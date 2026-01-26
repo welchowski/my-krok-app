@@ -1,19 +1,19 @@
 import { NavLink } from 'react-router-dom';
 import './lectionRun.css'; // або назви файл як хочеш
-
-import AudioPlayer from './AudioPlayer';
+import './audio-player.css'
+import { AudioPlayer } from 'react-audio-play'
 import TestQuestions from './TestQuestions';
 
 
 export default function FlashCard() {
 
   // Твої реальні дані після тесту
-  
 
 
-  
 
-  
+
+
+
 
 
 
@@ -36,20 +36,27 @@ export default function FlashCard() {
                   <h1 className="text-4xl mb-8 text-gray-900">
                     Анатомія серця: Повний курс
                   </h1>
-                   <div className="bg-white rounded-2xl shadow-lg p-8">
-                      
-                      <div className="relative mb-8">
-                        <div className="bg-white rounded-2xl shadow-lg p-4 mb-8">
- <div className="w-full bg-gray-950 flex items-center justify-center p-1">
-      <AudioPlayer />
-    </div>
-  <p className="text-sm opacity-60 mt-2 mb-2">
-    Аудіо взято для демо версії з YouTube каналу "Вербич Іван | Анатомія людини"
-  </p>
-</div>
+                  <div className="bg-white rounded-2xl shadow-lg p-8">
+
+                   
+                      <div >
+
+                        <div className="audio-player-wrapper">
+                          <AudioPlayer
+                            src="/audio/audioh.mp3"
+                            loop
+                            preload="auto"
+                            className="modern-audio-player"
+                          />
+
+                        </div>
+                        <p className="text-sm opacity-60 mt-2 mb-2">
+                          Аудіо взято для демо версії з YouTube каналу "Вербич Іван | Анатомія людини"
+                        </p>
                       </div>
-                      
-                    </div>
+                    
+
+                  </div>
                   <TestQuestions></TestQuestions>
                 </div>
               </div>
