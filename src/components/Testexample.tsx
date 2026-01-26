@@ -120,6 +120,7 @@ export default function Testexample() {
 
 
     return (
+        <div className="min-h-screen bg_base py-5 px-4 max-w-7xl mx-auto space-y-6">
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 mt-8">
             <h2 className="text-xl mb-0 mt-0 text-gray-900 pb-4 text-center">
                 Анатомія серця
@@ -422,6 +423,7 @@ export default function Testexample() {
 
                
             </div>
+        </div>
         </div>
     )
 }
