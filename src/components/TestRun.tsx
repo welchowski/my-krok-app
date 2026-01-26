@@ -3,6 +3,7 @@ import { useLocation, NavLink } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient'; // ← імпортуй свій клієнт Supabase
 import './test-run.css';
 import TestResultModal from './TestResultModal';
+import { CircleQuestionMark } from 'lucide-react';
 
 type AnswerState = 'idle' | 'correct' | 'wrong';
 interface DisciplineStats {
@@ -316,11 +317,7 @@ export default function TestRun() {
 
             {/* Підтримка */}
             <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-              <svg className="lucide lucide-circle-help w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <path d="M12 17h.01" />
-              </svg>
+             <CircleQuestionMark className="w-6 h-6" />
               <span className="font-semibold">Підтримка</span>
             </button>
           </div>
