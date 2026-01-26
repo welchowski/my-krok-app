@@ -7,7 +7,8 @@ export default function Selectvariant() {
   
 
   return (
-    <div className=" bg_base border-t-2 border-gray-200 pt-8">
+    <div className="min-h-screen  bg_base  to-gray-100 py-5 px-4">
+    <div className=" bg_base  pt-8">
           <h3 className="text-lg mb-4 text-gray-900">Виберіть тип проходження матеріалу</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                 <NavLink
@@ -154,6 +155,6 @@ export default function Selectvariant() {
                 </div>
                 </NavLink>
             </div>
-        </div>
+        </div></div>
   );
 }
