@@ -11,6 +11,7 @@ interface ProfileStats {
   examDaysLeft?: number;
   first_name?: string;
   last_name?: string;
+   krok_type?: string; 
 }
 
 interface DailyGoal {
@@ -103,6 +104,8 @@ export default function Static() {
   const [disciplines, setDisciplines] = useState<DisciplineProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [weakCount, setWeakCount] = useState(0);
+    const [userKrokType, setUserKrokType] = useState<string | null>(null); 
+
 
   useEffect(() => {
     async function fetchProfileData() {
@@ -117,6 +120,18 @@ export default function Static() {
           .eq('id', user.id)
           .single();
 
+
+          const { data: profileWithKrok } = await supabase
+  .from('profiles')
+  .select(`
+    *,
+    krok_types!krok_type_id (name)
+  `)
+  .eq('id', user.id)
+  .single();
+
+const krokType = profileWithKrok?.krok_types?.name?.trim() || null;
+setUserKrokType(krokType); // ← Зберегти в стан
         // Розрахунок статистики (можна винести в окремий запит або view)
         
 
@@ -396,7 +411,7 @@ function questionsText(n: number): string {
                               Тести
                             </div>
                             <div className="text-2xl font-bold text-gray-900">
-                              {dailyGoals?.tests_current ?? 0}/{dailyGoals?.tests_target ?? 20}
+                              {dailyGoals?.tests_current ?? 0}/{dailyGoals?.tests_target ?? 5}
                             </div>
                             <div className="h-2 bg-white rounded-full overflow-hidden mt-1.5">
                               <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all" style={{ width: `${dailyGoals ? (dailyGoals.tests_current / dailyGoals.tests_target) * 100 : 0}%` }} />
@@ -617,8 +632,7 @@ function questionsText(n: number): string {
                               Відмінний прогрес в анатомії
                             </div>
                             <div className="text-xs text-gray-600">
-                              Ви завершили 94% курсу. Завершіть останні 3 теми для
-                              отримання сертифікату!
+                              Ви завершили 94% курсу. Завершіть останні 3 питання
                             </div>
                           </div>
                           <div className="bg-white/80 p-4 rounded-xl border-l-4 border-orange-500">
@@ -769,14 +783,18 @@ function questionsText(n: number): string {
   </div>
 </td>
                                 <td className="py-4 px-4">
-                                  <NavLink
-                                    to="/dashboard/Selectvariant"
-                                    onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })}
-                                    className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm"
-                                  >
-                                    Переглянути →
-                                  </NavLink>
-                                </td>
+  <NavLink
+    to="/dashboard/tests/run"
+    state={{ 
+      selectedDisciplines: [disc.discipline],
+      learningMode: false,
+      userKrokType: userKrokType // потрібно додати цей стан
+    }}
+    className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm"
+  >
+    Переглянути →
+  </NavLink>
+</td>
                               </tr>
                             ))}
                             {disciplines.length === 0 && (
