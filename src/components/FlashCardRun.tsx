@@ -219,16 +219,12 @@ useEffect(() => {
     </button>
   ) : (
     // з другого і до передостаннього — "Завершити"
-    <button
+    <NavLink to="/dashboard"
       className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold shadow-lg flex items-center gap-2"
       onClick={e => {
         e.stopPropagation()
-        // тут буде твоя логіка завершення тесту
-        // наприклад:
-        // navigate('/results', { state: { ... } })
-        // або просто повернення на головну
-        console.log("Тест завершено!")
-        // або window.location.href = '/dashboard'
+        
+        
       }}
     >
       <svg className="lucide lucide-check-circle w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -236,7 +232,7 @@ useEffect(() => {
         <path d="m9 11 3 3L22 4" />
       </svg>
       Завершити
-    </button>
+    </NavLink>
   )}
 </div>
 

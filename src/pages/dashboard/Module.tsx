@@ -27,7 +27,7 @@ export default function Module() {
                   Переглянуто матеріалів
                 </p>
                 <p className="text-3xl text-gray-900">
-                  0 / 8
+                  0 / 10
                 </p>
               </div>
               <div className="flex gap-4">
