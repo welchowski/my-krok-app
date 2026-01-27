@@ -13,7 +13,7 @@ export default function Saved() {
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                         <Bookmark className="w-8 h-8 text-emerald-600" />
-                        Збережено
+                        Збережені питання
                     </h1>
                 </div>
 

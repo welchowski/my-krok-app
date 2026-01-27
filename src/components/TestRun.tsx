@@ -345,7 +345,7 @@ export default function TestRun() {
 
               <p className="font-semibold mb-3 text-lg flex items-center gap-2 text-gray-900">
                 {state === 'correct'
-                  ? <>✓ Відмінно! Правильна відповідь <span className="text-yellow-600 font-bold ml-10">+5 балів</span></>
+                  ? <>✓ Відмінно! <span className="text-yellow-600 font-bold ml-10">+5 балів</span></>
                   : '✗ На жаль, це не правильно'}
               </p>
 
@@ -373,7 +373,7 @@ export default function TestRun() {
                 setState('idle');
                 nextQuestion();
               }}
-              disabled={state !== 'idle'}
+              disabled={state !== 'idle'  }
             >
               Пропустити
             </button>
@@ -532,38 +532,7 @@ export default function TestRun() {
                 </div>
               </div>
             </NavLink>
-            <NavLink to="/dashboard/Testexample"
-              className="block transition-all h over:scale-105"
-              onClick={() => {
-                window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                // или window.scrollTo(0, 0);
-              }}>
-              <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br bg-yellow-400 rounded-xl flex items-center justify-center">
-                    <svg className="lucide lucide-list-checks w-6 h-6 text-white"
-                      fill="none" height="24" stroke="currentColor" strokeLinecap="round"
-                      strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <path d="m3 10 2.5 2.5L11 6" />
-                      <path d="m3 17 2.5 2.5L11 13" />
-                      <path d="M13 6h8" />
-                      <path d="M13 13h8" />
-                      <path d="M13 17h8" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-gray-900">
-                      Тести
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      6 питань
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-            </NavLink>
+            
           </div>
         </div>
       </div>

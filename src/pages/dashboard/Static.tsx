@@ -77,7 +77,22 @@ function MultiRingProgress({ values, size = 220 }: {
     </div>
   );
 }
+function formatQuestions(n: number): string {
+  if (n === 0) return 'питань';
 
+  const last = n % 10;
+  const lastTwo = n % 100;
+
+  if (last === 1 && lastTwo !== 11) {
+    return 'питання';
+  }
+
+  if (last >= 2 && last <= 4 && (lastTwo < 10 || lastTwo >= 20)) {
+    return 'питання';
+  }
+
+  return 'питань';
+}
 export default function Static() {
   const [leaders, setLeaders] = useState<any[]>([]);
 
@@ -166,7 +181,7 @@ export default function Static() {
         if (!userInTop) {
           // Якщо ні, показуємо топ-9 + користувача на останньому місці
           leadersList = [
-            ...leadersList.slice(0, 9),
+            ...leadersList.slice(0, 4),
             {
               id: user.id,
               first_name: profileData?.first_name,
@@ -211,9 +226,9 @@ export default function Static() {
 
         setDailyGoals({
           tests_current: daily?.tests_completed ?? 0,
-          tests_target: daily?.tests_target ?? 20,
+          tests_target: daily?.tests_target ?? 5,
           cards_current: daily?.cards_completed ?? 0,
-          cards_target: daily?.cards_target ?? 30,
+          cards_target: daily?.cards_target ?? 5,
           lectures_current: daily?.lectures_completed ?? 0,
           lectures_target: daily?.lectures_target ?? 2,
           xp_current: daily?.xp_earned ?? 0,
@@ -285,7 +300,10 @@ export default function Static() {
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-2xl">Завантаження профілю...</div>;
   }
-
+function questionsText(n: number): string {
+  if (n === 0) return 'Немає питань';
+  return `${n} ${formatQuestions(n)}`;
+}
 
   return (
     <div>
@@ -301,9 +319,15 @@ export default function Static() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-5">
                           <div className="relative">
-                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-2xl shadow-xl border-4 border-white">
-
-                            </div>
+                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-500 flex items-center justify-center shadow-xl border-4 border-white overflow-hidden">
+  <svg width="100%" height="100%" viewBox="0 0 100 100">
+    <path d="M0 60 Q25 40, 50 60 T100 60" fill="none" stroke="#c084fc" strokeWidth="14" opacity="0.4"/>
+    <path d="M0 55 Q25 35, 50 55 T100 55" fill="none" stroke="#a78bfa" strokeWidth="10" opacity="0.6"/>
+    <circle cx="28" cy="38" r="3" fill="white"/>
+    <circle cx="72" cy="42" r="2.5" fill="white"/>
+    <circle cx="55" cy="28" r="2" fill="white"/>
+  </svg>
+</div>
                             <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full p-2 shadow-lg border-3 border-white">
                               <svg className="lucide lucide-crown w-4 h-4 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z">
@@ -446,7 +470,7 @@ export default function Static() {
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                       <div className="bg-white rounded-3xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_12px_48px_rgba(0,0,0,0.12)]">
-                        <h3 className="text-2xl font-semibold text-gray-900 mb-8 text-center md:text-left">
+                        <h3 className="text-2xl font-semibold text-gray-900 mb-1 text-center md:text-left">
                           Розподіл відповідей
                         </h3>
                         {/* Великий графік з постійними проміжками та сильним закругленням */}
@@ -493,10 +517,91 @@ export default function Static() {
                           </div>
                         </div>
                       </div>
+
                       <div className="bg-gradient-to-br from-cyan-50 to-blue-50 p-5 rounded-2xl shadow-[4px_4px_8px_rgba(163,177,198,0.3),-4px_-4px_8px_rgba(255,255,255,0.7)]">
                         <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                           💡 Персональні рекомендації
                         </h4>
+                      <div 
+  className={`mt-6 p-4 border-2 rounded-xl gap-3 mb-3 ${
+    weakCount === 0 
+      ? 'bg-green-50 border-green-200' 
+      : 'bg-orange-50 border-orange-200'
+  }`}
+>
+  <div className="flex items-center gap-3 mb-3">
+    <div 
+      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+        weakCount === 0 ? 'bg-green-500' : 'bg-orange-400'
+      }`}
+    >
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" height="24" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className="lucide lucide-brain w-6 h-6 text-white"
+      >
+        <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z" />
+        <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z" />
+        <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4" />
+        <path d="M17.599 6.5a3 3 0 0 0 .399-1.375" />
+        <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5" />
+        <path d="M3.477 10.896a4 4 0 0 1 .585-.396" />
+        <path d="M19.938 10.5a4 4 0 0 1 .585.396" />
+        <path d="M6 18a4 4 0 0 1-1.967-.516" />
+        <path d="M19.967 17.484A4 4 0 0 1 18 18" />
+      </svg>
+    </div>
+
+    <div>
+      <div className="text-sm text-gray-900 font-medium">
+        {weakCount === 0 ? "Відмінний результат!" : "Слабкі теми"}
+      </div>
+      <div className="text-xs text-gray-600">
+        {weakCount === 0 
+          ? "Усі теми добре засвоєні" 
+          : "Потребують уваги"}
+      </div>
+    </div>
+  </div>
+
+  {/* Показуємо кількість тільки якщо > 0 */}
+  {weakCount > 0 && (
+    <div className="text-3xl font-medium text-orange-400 mb-3">
+      {weakCount} {weakCount === 1 ? "тема" : weakCount <= 4 ? "теми" : "тем"}
+    </div>
+  )}
+
+  <button
+    type="button"
+    onClick={() => {
+      if (weakCount === 0) {
+        // замість цього постав шлях, куди потрібно перейти
+        // наприклад: window.location.href = '/dashboard/new-material'
+        // або якщо використовуєш react-router:
+        // navigate('/dashboard/new-material')
+        window.location.href = '/dashboard/tests'; // ← зміни на свій роут
+      } else {
+        document.querySelector('#needlearn')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }}
+    className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
+      weakCount === 0
+        ? 'bg-green-600 text-white hover:bg-green-700'
+        : 'bg-orange-400 text-white hover:bg-orange-400'
+    }`}
+  >
+    {weakCount === 0 ? "Вчити новий матеріал" : "Тренувати зараз"}
+  </button>
+</div>          
                         <div className="space-y-3">
                           <div className="bg-white/80 p-4 rounded-xl border-l-4 border-blue-500">
                             <div className="font-semibold text-sm text-gray-800 mb-1">
@@ -526,46 +631,9 @@ export default function Static() {
                             </div>
                           </div>
                         </div>
-                        <div className="mt-6 p-4 bg-orange-50 border-2 border-orange-200 rounded-xl">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-brain w-6 h-6 text-white">
-                                <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z">
-                                </path>
-                                <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z">
-                                </path>
-                                <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4" />
-                                <path d="M17.599 6.5a3 3 0 0 0 .399-1.375" />
-                                <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5" />
-                                <path d="M3.477 10.896a4 4 0 0 1 .585-.396" />
-                                <path d="M19.938 10.5a4 4 0 0 1 .585.396" />
-                                <path d="M6 18a4 4 0 0 1-1.967-.516" />
-                                <path d="M19.967 17.484A4 4 0 0 1 18 18" />
-                              </svg>
-                            </div>
-                            <div>
-                              <div className="text-sm text-gray-900">
-                                Слабкі теми
-                              </div>
-                              <div className="text-xs text-gray-600">
-                                Потребують уваги
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-3xl text-orange-600 mb-2">
-                           {weakCount} {weakCount === 1 ? "тема" : weakCount <= 4 ? "теми" : "тем"}
-                          </div>
-                          <button className="w-full bg-orange-500 text-white py-2 rounded-lg text-sm hover:bg-orange-600 transition-colors" type="button"
-                            onClick={() => {
-                              document.querySelector('#needlearn')?.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                              });
-                            }}>
-                            Тренувати
-                            зараз
-                          </button>
-                        </div>
+
+                        
+                        
                       </div>
                     </div>
                     <div id="needlearn" className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
@@ -669,11 +737,9 @@ export default function Static() {
                                       <circle cx="12" cy="12" r="10" />
                                       <path d="m9 12 2 2 4-4" />
                                     </svg>
-                                    <span className="text-gray-700">
-                                      {disc.strong_questions === 0
-                                        ? 'Немає сильних питань'
-                                        : `${disc.strong_questions} питань`}
-                                    </span>
+                                   <span className="text-gray-700">
+  {questionsText(disc.strong_questions)}
+</span>
                                   </div>
                                 </td>
                               <td className="py-4 px-4">
@@ -851,7 +917,7 @@ export default function Static() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                       <div className="bg-white bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6">
                         <div className="flex items-center gap-2 mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-5 h-5 text-orange-600">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-5 h-5 text-orange-400">
                             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
                             <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
                             <path d="M4 22h16" />
@@ -864,7 +930,7 @@ export default function Static() {
                         <div className="space-y-2">
                           {leaders.map((leader, idx) => {
                             const isUser = leader.isUser;
-                            const position = isUser && idx === 9 ? profile?.rank ?? '?' : idx + 1; // Якщо користувач на останньому (поза топ-9), показуємо справжній ранг
+                            const position = isUser && idx === 4 ? profile?.rank ?? '?' : idx + 1; // Якщо користувач на останньому (поза топ-9), показуємо справжній ранг
                             const name = isUser ? 'Ви' : `${leader.first_name} ${leader.last_name?.[0] ?? ''}.`;
                             const initials = (leader.first_name?.[0] ?? '') + (leader.last_name?.[0] ?? '');
                             const rowClass = isUser ? 'bg-yellow-100 flex items-center gap-3 p-2 rounded-xl shadow-sm' : 'flex items-center gap-3 p-2 rounded-xl';
@@ -895,7 +961,7 @@ export default function Static() {
                           </h3>
                         </div>
                         <p className="text-5xl font-black mb-2">
-                          #23
+                          #5
                         </p>
                         <p className="text-indigo-100 mb-4">
                           у вашій групі
@@ -903,7 +969,7 @@ export default function Static() {
                         <div className="bg-white/20 rounded-lg p-3">
                           <div className="flex justify-between text-sm mb-1">
                             <span>
-                              До топ-10
+                              До першого місця
                             </span>
                             <span className="font-bold">
                               267

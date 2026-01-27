@@ -1,0 +1,8 @@
+.recharts-wrapper {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.recharts-responsive-container {
+  overflow: visible !important;
+}
