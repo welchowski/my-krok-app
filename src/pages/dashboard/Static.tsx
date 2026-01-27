@@ -3,6 +3,7 @@ import './static.css';
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
+import StaticMed from './StaticMed';
 interface ProfileStats {
   level?: number;
   points: number;
@@ -931,6 +932,8 @@ function questionsText(n: number): string {
                       </div>
                     </div>
 
+                    
+
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                       <div className="bg-white bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6">
@@ -1001,15 +1004,7 @@ function questionsText(n: number): string {
                       </div>
                     </div>
 
-
-
-
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                  </div>
-
-
-                  <div className="bg-white rounded-2xl p-6 shadow-lg">
+<div className="bg-white rounded-2xl p-6 shadow-lg">
                     <h3 className="text-xl font-bold text-gray-800 mb-6">
                       Досягнення та нагороди
                     </h3>
@@ -1096,6 +1091,18 @@ function questionsText(n: number): string {
                       </div>
                     </div>
                   </div>
+
+                    <StaticMed></StaticMed>
+
+
+
+
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                  </div>
+
+
+                  
                 </div>
               </div>
             </div>
