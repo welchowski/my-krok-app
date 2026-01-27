@@ -12,7 +12,8 @@ interface ProfileStats {
   examDaysLeft?: number;
   first_name?: string;
   last_name?: string;
-   krok_type?: string; 
+  krok_type?: string;
+  university?: string; 
 }
 
 interface DailyGoal {
@@ -96,23 +97,45 @@ function formatQuestions(n: number): string {
   return 'питань';
 }
 export default function Static() {
-  const [leaders, setLeaders] = useState<any[]>([]);
+  const [leaders, setLeaders] = useState<any[]>(() => {
+    const cached = localStorage.getItem('staticLeaders');
+    return cached ? JSON.parse(cached) : [];
+  });
 
-
-  const [profile, setProfile] = useState<ProfileStats | null>(null);
-  const [dailyGoals, setDailyGoals] = useState<DailyGoal | null>(null);
-  const [distribution, setDistribution] = useState<AnswerDistribution | null>(null);
-  const [disciplines, setDisciplines] = useState<DisciplineProgress[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [weakCount, setWeakCount] = useState(0);
-    const [userKrokType, setUserKrokType] = useState<string | null>(null); 
+  const [profile, setProfile] = useState<ProfileStats | null>(() => {
+    const cached = localStorage.getItem('staticProfile');
+    return cached ? JSON.parse(cached) : null;
+  });
+  const [dailyGoals, setDailyGoals] = useState<DailyGoal | null>(() => {
+    const cached = localStorage.getItem('staticDailyGoals');
+    return cached ? JSON.parse(cached) : null;
+  });
+  const [distribution, setDistribution] = useState<AnswerDistribution | null>(() => {
+    const cached = localStorage.getItem('staticDistribution');
+    return cached ? JSON.parse(cached) : null;
+  });
+  const [disciplines, setDisciplines] = useState<DisciplineProgress[]>(() => {
+    const cached = localStorage.getItem('staticDisciplines');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(false);
+  const [weakCount, setWeakCount] = useState(() => {
+    const cached = localStorage.getItem('staticWeakCount');
+    return cached ? JSON.parse(cached) : 0;
+  });
+  const [userKrokType, setUserKrokType] = useState<string | null>(() => {
+    const cached = localStorage.getItem('staticUserKrokType');
+    return cached ? JSON.parse(cached) : null;
+  }); 
 
 
   useEffect(() => {
+    let mounted = true;
+
     async function fetchProfileData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user || !mounted) return;
 
         // 1. Профіль користувача (з таблиці profiles + розрахунки)
         const { data: profileData } = await supabase
@@ -132,7 +155,10 @@ export default function Static() {
   .single();
 
 const krokType = profileWithKrok?.krok_types?.name?.trim() || null;
-setUserKrokType(krokType); // ← Зберегти в стан
+if (mounted) {
+  setUserKrokType(krokType);
+  localStorage.setItem('staticUserKrokType', JSON.stringify(krokType));
+}
         // Розрахунок статистики (можна винести в окремий запит або view)
         
 
@@ -213,20 +239,29 @@ setUserKrokType(krokType); // ← Зберегти в стан
           isUser: l.id === user.id,
         }));
 
-        setLeaders(leadersList);
+        if (mounted) {
+          setLeaders(leadersList);
+          localStorage.setItem('staticLeaders', JSON.stringify(leadersList));
+        }
 
 
 
         // Рівень, бали, стрік — для прикладу захардкодимо, пізніше розрахуємо
-        setProfile({
+        const profileData_updated = {
           level,
           points: totalPoints,
           streakDays,
           rank,
           examDaysLeft: 45, // поки захардкоджено
-          first_name: profileData?.first_name, // <-- додай це
+          first_name: profileData?.first_name,
           last_name: profileData?.last_name,
-        });
+          krok_type: krokType,
+          university: profileData?.university,
+        };
+        if (mounted) {
+          setProfile(profileData_updated);
+          localStorage.setItem('staticProfile', JSON.stringify(profileData_updated));
+        }
 
         // Щоденні цілі (з user_daily_goals)
         const today = new Date().toISOString().split('T')[0];
@@ -239,8 +274,7 @@ setUserKrokType(krokType); // ← Зберегти в стан
           .eq('date', today)
           .single();
 
-
-        setDailyGoals({
+        const dailyGoalsData = {
           tests_current: daily?.tests_completed ?? 0,
           tests_target: daily?.tests_target ?? 5,
           cards_current: daily?.cards_completed ?? 0,
@@ -249,7 +283,11 @@ setUserKrokType(krokType); // ← Зберегти в стан
           lectures_target: daily?.lectures_target ?? 2,
           xp_current: daily?.xp_earned ?? 0,
           xp_target: daily?.xp_target ?? 125,
-        });
+        };
+        if (mounted) {
+          setDailyGoals(dailyGoalsData);
+          localStorage.setItem('staticDailyGoals', JSON.stringify(dailyGoalsData));
+        }
 
         // Розподіл відповідей
 
@@ -278,11 +316,15 @@ setUserKrokType(krokType); // ← Зберегти в стан
 
 
         // оновлюємо стан (можна залишити ту саму структуру AnswerDistribution)
-        setDistribution({
+        const distributionData = {
           correct: totalCorrect,
           wrong: totalWrong,
           skipped: totalSkipped,
-        });
+        };
+        if (mounted) {
+          setDistribution(distributionData);
+          localStorage.setItem('staticDistribution', JSON.stringify(distributionData));
+        }
 
         const formattedDisciplines = discData?.map(d => {
           const total = d.questions_total ?? 0;
@@ -299,21 +341,30 @@ setUserKrokType(krokType); // ← Зберегти в стан
           };
         }) ?? [];
 
-        setDisciplines(formattedDisciplines);
-        setWeakCount(formattedDisciplines.filter(d => d.strong_questions < 5).length);
+        if (mounted) {
+          setDisciplines(formattedDisciplines);
+          localStorage.setItem('staticDisciplines', JSON.stringify(formattedDisciplines));
+          const weakCountValue = formattedDisciplines.filter(d => d.strong_questions < 5).length;
+          setWeakCount(weakCountValue);
+          localStorage.setItem('staticWeakCount', JSON.stringify(weakCountValue));
+        }
         
       } catch (err) {
         console.error('Помилка завантаження профілю:', err);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     }
 
     fetchProfileData();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
 
-  if (loading) {
+  if (loading && !profile) {
     return <div className="min-h-screen flex items-center justify-center text-2xl">Завантаження профілю...</div>;
   }
 function questionsText(n: number): string {
@@ -353,9 +404,16 @@ function questionsText(n: number): string {
                             </div>
                           </div>
                           <div>
-                            <h1 className="text-2xl text-gray-900 mb-2">
-                              {profile?.first_name} {profile?.last_name}
-                            </h1>
+                            <div className="mb-2">
+                              <h1 className="text-2xl text-gray-900">
+                                {profile?.first_name} {profile?.last_name}
+                              </h1>
+                              {(profile?.university || profile?.krok_type) && (
+                                <p className="text-sm text-gray-500 mt-1">
+                                  ({profile?.university}{profile?.university && profile?.krok_type ? ', ' : ''}{profile?.krok_type})
+                                </p>
+                              )}
+                            </div>
                             <div className="flex items-center gap-2">
                               <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-lg text-sm shadow-md">
                                 💎 Рівень {profile?.level ?? 0}
@@ -624,8 +682,8 @@ function questionsText(n: number): string {
                               Продовжуйте серію!
                             </div>
                             <div className="text-xs text-gray-600">
-                              Ви вже 34 дні поспіль навчаєтесь. Ще 6 днів і ви
-                              отримаєте відзнаку "Місяць навчання"!
+                               Ще 7 днів і ви
+                              отримаєте відзнаку "Тиждень навчання"!
                             </div>
                           </div>
                           <div className="bg-white/80 p-4 rounded-xl border-l-4 border-green-500">
@@ -923,7 +981,7 @@ function questionsText(n: number): string {
                                   Новий рекорд
                                 </div>
                                 <div className="text-xs text-slate-500">
-                                  Вчора • 30 днів стрік
+                                  Сьогодні • 100 балів 
                                 </div>
                               </div>
                             </div>

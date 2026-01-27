@@ -1,16 +1,31 @@
 import { NavLink } from 'react-router-dom';
 import './test-run.css';
 
- 
+interface SelectvariantProps {
+  buttonText?: string;
+  showAudio?: boolean;
+  showFlashCards?: boolean;
+  showTests?: boolean;
+  showLectures?: boolean;
+  showVideo?: boolean;
+}
 
-export default function Selectvariant() {
+export default function Selectvariant({
+  buttonText = "Виберіть тип проходження матеріалу",
+  showAudio = true,
+  showFlashCards = true,
+  showTests = true,
+  showLectures = true,
+  showVideo = true,
+}: SelectvariantProps) {
   
 
   return (
-    <div className="min-h-screen  bg_base  to-gray-100 py-5 px-4">
+    <div className="  bg_base  to-gray-100 py-5 px-4">
     <div className=" bg_base  pt-8">
-          <h3 className="text-lg mb-4 text-gray-900">Виберіть тип проходження матеріалу</h3>
+          <h3 className="text-lg mb-4 text-gray-900">{buttonText}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                {showVideo && (
                 <NavLink
                     to="/dashboard/VideoRun"
                     className="block transition-all h over:scale-105"
@@ -36,6 +51,8 @@ export default function Selectvariant() {
                             </div>
                         </div>
                     </div></NavLink>
+                )}
+                {showFlashCards && (
                 <NavLink
                     to="/dashboard/flashexample"
                     className="block transition-all h over:scale-105"
@@ -63,6 +80,8 @@ export default function Selectvariant() {
                         </div>
                     </div>
                 </NavLink>
+                )}
+                {showLectures && (
                  <NavLink
                  to="/dashboard/lectionRun"
                     className="block transition-all h over:scale-105"
@@ -93,6 +112,8 @@ export default function Selectvariant() {
                     </div>
                 </div>
                  </NavLink>
+                )}
+                 {showAudio && (
                  <NavLink to="/dashboard/AudioRun"
                     className="block transition-all h over:scale-105"
                     onClick={() => {
@@ -122,6 +143,8 @@ export default function Selectvariant() {
                     </div>
                 </div>
                 </NavLink>
+                )}
+                {showTests && (
                 <NavLink to="/dashboard/Testexample"
                     className="block transition-all h over:scale-105"
                     onClick={() => {
@@ -154,6 +177,7 @@ export default function Selectvariant() {
 
                 </div>
                 </NavLink>
+                )}
             </div>
         </div></div>
   );

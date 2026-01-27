@@ -1,20 +1,145 @@
 // src/pages/dashboard/Module.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './module.css'; // або назви файл як хочеш
 import { NavLink } from 'react-router-dom';
 import heartImage from '/photo-1690306816872-91063f6de36b.png';  // або правильний відносний шлях
+import CardSelection from './Card';
+import { supabase } from '../../lib/supabaseClient';
 
-type Tab = 'lecture' | 'audio' | 'video';
+type Tab = 'lecture' | 'audio' | 'video' | 'cards';
+
+interface Category {
+  name: string;
+  topics: string[];
+}
+
+const CATEGORIES: Category[] = [
+  {
+    name: 'Кардіологія',
+    topics: ['Анатомія серця', 'Фізіологія серця', 'Патології серця']
+  },
+  {
+    name: 'Неврологія',
+    topics: ['Структура мозку', 'Неврологічні захворювання', 'Клінічна неврологія']
+  },
+  {
+    name: 'Анатомія',
+    topics: ['Системна анатомія', 'Топографічна анатомія', 'Порівняльна анатомія']
+  }
+];
 
 export default function Module() {
   const [activeTab, setActiveTab] = useState<Tab>('lecture');
+  const [selectedTopics, setSelectedTopics] = useState<Set<string>>(() => {
+    // Ініціалізуємо з Кардіологією вибрано
+    const initialSet = new Set<string>();
+    CATEGORIES[0].topics.forEach(topic => initialSet.add(topic));
+    return initialSet;
+  });
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(() => {
+    // Розширяємо Кардіологію за замовчуванням
+    return new Set(['Кардіологія']);
+  });
+  const [universityName, setUniversityName] = useState<string | null>(() => {
+    const cached = localStorage.getItem('moduleUniversity');
+    return cached ? JSON.parse(cached) : null;
+  });
+  const [krokType, setKrokType] = useState<string | null>(() => {
+    const cached = localStorage.getItem('moduleKrokType');
+    return cached ? JSON.parse(cached) : null;
+  });
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log('Current user:', user);
+        if (!user || !mounted) return;
+
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select(`*,
+      krok_types!krok_type_id ( name )
+  `)
+          .eq('id', user.id)
+          .single();
+
+        console.log('Profile data:', profile);
+        console.log('Profile error:', profileError);
+
+        if (profileError) throw profileError;
+
+        if (mounted) {
+          console.log('University:', profile?.university);
+          console.log('Krok types:', profile?.krok_types);
+          const university = profile?.university || null;
+          const kroks = profile?.krok_types?.name || null;
+          
+          setUniversityName(university);
+          setKrokType(kroks);
+          
+          // Збереження в localStorage
+          localStorage.setItem('moduleUniversity', JSON.stringify(university));
+          localStorage.setItem('moduleKrokType', JSON.stringify(kroks));
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'lecture', label: 'Лекції' },
     { id: 'video', label: 'Відео' },
     { id: 'audio', label: 'Аудіо' },
-
+    { id: 'cards', label: 'Картки' },
   ];
+
+  // Функція для переключення теми
+  const toggleTopic = (topic: string, checked: boolean) => {
+    const newSelected = new Set(selectedTopics);
+    if (checked) {
+      newSelected.add(topic);
+    } else {
+      newSelected.delete(topic);
+    }
+    setSelectedTopics(newSelected);
+  };
+
+  // Функція для переключення всіх тем у категорії
+  const toggleAllInCategory = (category: Category, checked: boolean) => {
+    const newSelected = new Set(selectedTopics);
+    category.topics.forEach(topic => {
+      if (checked) {
+        newSelected.add(topic);
+      } else {
+        newSelected.delete(topic);
+      }
+    });
+    setSelectedTopics(newSelected);
+  };
+
+  // Функція для переключення розширення категорії
+  const toggleCategory = (categoryName: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryName)) {
+      newExpanded.delete(categoryName);
+    } else {
+      newExpanded.add(categoryName);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  // Перевірка чи всі теми в категорії вибрані
+  const allInCategorySelected = (category: Category) => {
+    return category.topics.every(topic => selectedTopics.has(topic));
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen p-6 bg-gradient-to-br from-slate-50 to-indigo-50">
@@ -56,6 +181,20 @@ export default function Module() {
                 </div>
               </div>
             </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">
+                  Університет/ тип КРОКу
+                </p>
+                <p className="text-3xl text-gray-900">
+                  {universityName && krokType ? `${universityName} / ${krokType}` : 'Не вказано'}
+                </p>
+              </div>
+              <div className="flex gap-4">
+               
+                
+              </div>
+            </div>
           </div>
 
           {/* Таби */}
@@ -82,58 +221,119 @@ export default function Module() {
             {/* Лівий сайдбар з фільтрами — однаковий для всіх табів */}
             <div className="bg-white rounded-2xl shadow-lg p-6 h-fit order-2 lg:order-1">
               <h3 className="text-xl mb-4 text-gray-900">Фільтрувати за темами</h3>
-              <div className="bg-white rounded-2xl shadow-lg p-2 h-fit">
+              <div className="space-y-4">
+                {CATEGORIES.map((category) => {
+                  const isExpanded = expandedCategories.has(category.name);
+                  const allSelected = allInCategorySelected(category);
+                  
+                  return (
+                    <div key={category.name} className="border-b pb-4 last:border-b-0">
+                      {/* Заголовок категорії з кнопкою розширення */}
+                      <div className="flex items-center justify-between mb-3">
+                        <button
+                          onClick={() => toggleCategory(category.name)}
+                          className="flex items-center gap-2 flex-1 hover:bg-gray-100 p-2 rounded transition-all"
+                        >
+                          <span className="text-gray-900 font-medium">{category.name}</span>
+                          <svg
+                            className={`lucide lucide-chevron w-5 h-5 text-gray-900 transition-transform ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                            fill="none"
+                            height="24"
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            width="24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </button>
 
-                <div className="mb-4">
-                  <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 transition-all">
-                    <span className="text-gray-900">
-                      Кардіологія
-                    </span>
-                    <svg className="lucide lucide-chevron-down w-5 h-5 text-gray-900" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m6 9 6 6 6-6" />
-                    </svg>
-                  </button>
-                  <div className="ml-4 mt-2 space-y-2">
-                    <label className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-white/5">
-                      <input className="w-5 h-5 rounded border-2" type="checkbox" />
-                      <span className="text-sm text-gray-600">
-                        Анатомія серця
-                      </span>
-                    </label>
-                    <label className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-white/5">
-                      <input className="w-5 h-5 rounded border-2" type="checkbox" />
-                      <span className="text-sm text-gray-600">
-                        Фізіологія серця
-                      </span>
-                    </label>
-                    <label className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-white/5">
-                      <input className="w-5 h-5 rounded border-2" type="checkbox" />
-                      <span className="text-sm text-gray-600">
-                        Патології серця
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                <div className="mb-4">
-                  <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 transition-all">
-                    <span className="text-gray-900">
-                      Неврологія
-                    </span>
-                    <svg className="lucide lucide-chevron-right w-5 h-5 text-gray-900" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </button>
-                </div>
-                <div className="mb-4">
-                  <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-100 transition-all">
-                    <span className="text-gray-900">
-                      Анатомія
-                    </span>
-                    <svg className="lucide lucide-chevron-right w-5 h-5 text-gray-900" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </button>
-                </div>
+                        {/* Checkbox для "Обрати всі" */}
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <div className="relative">
+                            <input
+                              type="checkbox"
+                              className="sr-only"
+                              checked={allSelected}
+                              onChange={(e) => toggleAllInCategory(category, e.target.checked)}
+                            />
+                            <div
+                              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                allSelected
+                                  ? 'bg-blue-600 border-blue-600'
+                                  : 'border-gray-300 hover:border-blue-500'
+                              }`}
+                            >
+                              <svg
+                                className={`lucide lucide-check w-3.5 h-3.5 text-white ${allSelected ? '' : 'hidden'}`}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                              >
+                                <path d="M20 6 9 17l-5-5" />
+                              </svg>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+
+                      {/* Теми категорії */}
+                      {isExpanded && (
+                        <div className="ml-4 space-y-2">
+                          {category.topics.map((topic) => (
+                            <label
+                              key={topic}
+                              className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-all"
+                            >
+                              <div className="relative">
+                                <input
+                                  type="checkbox"
+                                  className="sr-only"
+                                  checked={selectedTopics.has(topic)}
+                                  onChange={(e) => toggleTopic(topic, e.target.checked)}
+                                />
+                                <div
+                                  className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                    selectedTopics.has(topic)
+                                      ? 'bg-blue-600 border-blue-600'
+                                      : 'border-gray-300 hover:border-blue-500'
+                                  }`}
+                                >
+                                  <svg
+                                    className={`lucide lucide-check w-3.5 h-3.5 text-white ${
+                                      selectedTopics.has(topic) ? '' : 'hidden'
+                                    }`}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="3"
+                                  >
+                                    <path d="M20 6 9 17l-5-5" />
+                                  </svg>
+                                </div>
+                              </div>
+                              <span
+                                className={`text-sm ${
+                                  selectedTopics.has(topic)
+                                    ? 'text-blue-900 font-medium'
+                                    : 'text-gray-600'
+                                }`}
+                              >
+                                {topic}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -570,6 +770,10 @@ export default function Module() {
                     </div>
                   </div>
                 </div>
+              )}
+
+              {activeTab === 'cards' && (
+                <CardSelection />
               )}
             </div>
           </div>

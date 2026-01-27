@@ -128,29 +128,34 @@ export default function Testexample() {
             <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-6">
                 {/* Панель з кнопками Зберегти / Прогрес / Підтримка */}
                 <div className="flex justify-between items-center p-4 border-b-2 border-gray-100 gap-6 pb-4">
-                    {/* Зберегти */}
+                   {/* Підтримка */}
+                    <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <CircleQuestionMark className="w-6 h-6" />
+                        <span className="font-semibold">Підтримка</span>
+                    </button>
+                    {/* Прогрес */}
+                    <div className="flex-1 max-w-xl mx-auto space-y-1">
+                        <div className="flex items-center justify-between text-sm font-medium text-gray-600 mb-1">
+                            <span>Питання {currentQuestion + 1} з {questionsMOKUP.length}</span>
+                            <span>{Math.round(((currentQuestion + 1) / questionsMOKUP.length) * 100)}%</span>
+                        </div>
+
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+                            <div
+                                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 ease-out"
+                                style={{ width: `${((currentQuestion + 1) / questionsMOKUP.length) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+
+                     {/* Зберегти */}
                     <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
                         <svg className="lucide lucide-bookmark w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
                         </svg>
                         <span className="font-semibold">Зберегти</span>
                     </button>
-                    {/* Прогрес */}
-                    <div className="flex-1 max-w-xl mx-auto space-y-1">
-                        <div className="w-full bg-gray-200 rounded-full h-6 overflow-hidden shadow-inner">
-                            <div
-                                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 ease-out flex items-center justify-end pr-2 text-white font-bold text-sm"
-                                style={{ width: `${((currentQuestion + 1) / questionsMOKUP.length) * 100}%` }}
-                            >
-                                {Math.round(((currentQuestion + 1) / questionsMOKUP.length) * 100)}% ({currentQuestion + 1}/{questionsMOKUP.length})
-                            </div>
-                        </div>
-                    </div>
-                    {/* Підтримка */}
-                    <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-                        <CircleQuestionMark className="w-6 h-6" />
-                        <span className="font-semibold">Підтримка</span>
-                    </button>
+                    
                 </div>
                 <h2 className="text-xl mb-6 text-gray-900 pt-6">{current.question}</h2>
                 <div className="space-y-3">
@@ -349,38 +354,7 @@ export default function Testexample() {
                     </div>
                 </div>
                 </NavLink>
-                <NavLink to="/dashboard/Testexample"
-                    className="block transition-all h over:scale-105"
-                    onClick={() => {
-                        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-                        // или window.scrollTo(0, 0);
-                    }}>
-                <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:scale-105 transition-all">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br bg-yellow-400 rounded-xl flex items-center justify-center">
-                            <svg className="lucide lucide-list-checks w-6 h-6 text-white"
-                                fill="none" height="24" stroke="currentColor" strokeLinecap="round"
-                                strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="m3 10 2.5 2.5L11 6" />
-                                <path d="m3 17 2.5 2.5L11 13" />
-                                <path d="M13 6h8" />
-                                <path d="M13 13h8" />
-                                <path d="M13 17h8" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 className="text-gray-900">
-                                Тести
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                                6 питань
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-                </NavLink>
+                
             </div>
         </div>
             <div className="flex justify-between items-center mb-6">

@@ -174,14 +174,19 @@ export default function TestRun() {
         .select('*')
         .order('id', { ascending: true });
 
-      // Обов’язковий фільтр за типом КРОКу
-      if (userKrokType) {
-        query = query.eq('krok_type', userKrokType);
-      }
-
-      // Фільтр за дисциплінами, якщо обрано
+      // Спочатку спробуємо загальний фільтр
+      // Якщо є обрані дисципліни - завантажуємо за ними
       if (selectedDisciplines.length > 0) {
         query = query.in('discipline', selectedDisciplines);
+        
+        // Якщо є userKrokType - додатково фільтруємо за ним
+        if (userKrokType) {
+          query = query.eq('krok_type', userKrokType);
+        }
+      } 
+      // Якщо дисципліни не вибрані, але є userKrokType - завантажуємо все для цього типу
+      else if (userKrokType) {
+        query = query.eq('krok_type', userKrokType);
       }
 
       const { data, error } = await query.limit(50000);
@@ -191,6 +196,8 @@ export default function TestRun() {
         setLoading(false);
         return;
       }
+
+      console.log('Завантажено питань:', data?.length || 0, 'для дисциплін:', selectedDisciplines, 'тип:', userKrokType);
 
       setQuestions(data || []);
       setUserSelected(new Array(data?.length || 0).fill(null));
@@ -202,7 +209,13 @@ export default function TestRun() {
   }, [selectedDisciplines, userKrokType]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Завантаження...</div>;
-  if (questions.length === 0) return <div className="min-h-screen flex items-center justify-center">Питань не знайдено</div>;
+  if (questions.length === 0) return (
+    <div className="min-h-screen flex items-center justify-center flex-col gap-4">
+      <p>Питань не знайдено</p>
+      <p className="text-gray-500 text-sm">Дисципліни: {selectedDisciplines.join(', ') || 'не вибрано'}</p>
+      <p className="text-gray-500 text-sm">Тип: {userKrokType || 'не вибрано'}</p>
+    </div>
+  );
   if (currentQuestion >= questions.length) return <div className="min-h-screen flex items-center justify-center">Тест завершено!</div>;
 
   const getButtonClass = (i: number) => {
@@ -292,13 +305,13 @@ export default function TestRun() {
         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
           {/* Панель з кнопками Зберегти / Прогрес / Підтримка */}
           <div className="flex justify-between items-center p-4 pt-0 border-b-2 border-gray-100 gap-6">
-            {/* Зберегти */}
+
+            {/* Підтримка */}
             <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-              <svg className="lucide lucide-bookmark w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-              </svg>
-              <span className="font-semibold">Зберегти</span>
+             <CircleQuestionMark className="w-6 h-6" />
+              <span className="font-semibold">Підтримка</span>
             </button>
+           
 
             {/* Прогрес */}
             <div className="flex-1 max-w-xl mx-auto space-y-1">
@@ -314,12 +327,14 @@ export default function TestRun() {
                 />
               </div>
             </div>
-
-            {/* Підтримка */}
+ {/* Зберегти */}
             <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-             <CircleQuestionMark className="w-6 h-6" />
-              <span className="font-semibold">Підтримка</span>
+              <svg className="lucide lucide-bookmark w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+              </svg>
+              <span className="font-semibold">Зберегти</span>
             </button>
+            
           </div>
 
           <h2 className="text-xl mb-6 text-gray-900 pt-6">{current.question}</h2>

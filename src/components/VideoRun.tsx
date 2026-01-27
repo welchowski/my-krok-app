@@ -57,7 +57,7 @@ export default function FlashCard() {
                     </div>
 
                   </div>
-                  <TestQuestions></TestQuestions>
+                                    <TestQuestions showAudio={true} showFlashCards={true} showTests={false} showLectures={true} showVideo={false} />
                 </div>
               </div>
             </div>

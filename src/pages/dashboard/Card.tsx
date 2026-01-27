@@ -1,4 +1,4 @@
-// src/pages/dashboard/Tests.tsx
+// src/pages/dashboard/Card.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
@@ -90,7 +90,7 @@ export default function CardSelection() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 min-h-screen p-6 bg_base">
-      <h1 className="text-4xl mb-2" >Вибір теми </h1>
+      <h1 className="text-4xl mb-2" >Вибір теми</h1>
       <p className="text-sm text-gray-500 mb-6">
   {userKrokType || '—'} 
 </p>

@@ -74,24 +74,34 @@ export default function FlashCard() {
 
         <div className="p-8">
           {!flipped ? (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 text-center">
-                {current.question}
-              </h2>
-              <p className="text-center text-gray-500 text-lg pt-4">
-                натисни щоб побачити відповідь
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-8">
-              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
-                <p className="text-xl leading-relaxed text-gray-800">
-                  <strong>Відповідь: </strong>
-                  {current.explanation}
+            <div className="flex gap-8 items-center">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {current.question}
+                </h2>
+                <p className="text-center text-gray-500 text-lg pt-4">
+                  натисни щоб побачити відповідь
                 </p>
               </div>
+              <div className="flex-shrink-0">
+                <img 
+                  src="/cardsphoto.png" 
+                  alt="Card illustration" 
+                  className="w-64 h-64 object-cover rounded-lg shadow-md"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-8 items-start">
+              <div className="flex-1 space-y-8">
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                  <p className="text-xl leading-relaxed text-gray-800">
+                    <strong>Відповідь: </strong>
+                    {current.explanation}
+                  </p>
+                </div>
 
-              <div className="flex gap-4 justify-center flex-wrap mt-8">
+                <div className="flex gap-4 justify-center flex-wrap mt-8">
                       <button className="bg-green-500 hover:bg-green-600 text-white rounded-xl px-8 py-4 font-semibold shadow-lg transition-all hover:scale-105 flex items-center gap-3" onClick={e => {
               e.stopPropagation()
               setIndex(i => (i + 1) % cards.length)
@@ -143,9 +153,17 @@ export default function FlashCard() {
                       </button>
                     </div>
 
-              <p className="text-center text-gray-500 text-sm pt-4">
-                натисни щоб повернутися до питання
-              </p>
+                <p className="text-center text-gray-500 text-sm pt-4">
+                  натисни щоб повернутися до питання
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <img 
+                  src="/cardsphoto.png" 
+                  alt="Card illustration" 
+                  className="w-64 h-64 object-cover rounded-lg shadow-md"
+                />
+              </div>
             </div>
           )}
         </div>

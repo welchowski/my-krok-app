@@ -4,9 +4,15 @@ import { supabase } from '../../lib/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import './profile.css';
 
+interface University {
+  id: number;
+  name: string;
+}
+
 export default function Profile() {
   const navigate = useNavigate();
   const [krokTypes, setKrokTypes] = useState<{ id: number; name: string }[]>([]);
+  const [universities, setUniversities] = useState<University[]>([]);
   const [krokTypesLoading, setKrokTypesLoading] = useState(true);
 
   const [profile, setProfile] = useState<any>(null);
@@ -82,7 +88,22 @@ export default function Profile() {
     }
   }
 
+  async function loadUniversities() {
+    try {
+      const { data, error } = await supabase
+        .from('universities')
+        .select('id, name')
+        .order('name');
+
+      if (error) throw error;
+      setUniversities(data || []);
+    } catch (err) {
+      console.error('Помилка завантаження університетів:', err);
+    }
+  }
+
   loadKrokTypes();
+  loadUniversities();
 }, []);
 
   // Збереження змін
@@ -261,12 +282,18 @@ export default function Profile() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Університет</label>
-                <input
-                  type="text"
+                <select
                   value={formData.university}
                   onChange={(e) => setFormData({ ...formData, university: e.target.value })}
                   className="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500"
-                />
+                >
+                  <option value="">Оберіть ваш заклад</option>
+                  {universities.map((uni) => (
+                    <option key={uni.id} value={uni.name}>
+                      {uni.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex gap-4">
