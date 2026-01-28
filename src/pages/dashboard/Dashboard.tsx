@@ -99,7 +99,7 @@ export default function Dashboard() {
       {/* ===== MOBILE MENU BUTTON (visible only on mobile) ===== */}
       <button
         type="button"
-        className="md:hidden fixed top-4 left-4 z-50 p-3 bg-white rounded-lg shadow-lg active:scale-95 transition-transform"
+        className="md:hidden fixed top-4 right-4 z-50 p-3 bg-white rounded-lg shadow-lg active:scale-95 transition-transform"
         onClick={() => setMobileMenuOpen(true)}
         aria-label="Відкрити меню"
       >
@@ -130,9 +130,6 @@ export default function Dashboard() {
                   onClick={closeMobileMenu}
                   aria-label="Закрити меню"
                 >
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
                 </button>
               </div>
 

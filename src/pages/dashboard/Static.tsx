@@ -380,21 +380,21 @@ function questionsText(n: number): string {
           <div className="">
             <div className="tailwind css-myl2ny css-10v5rb">
               <div className="min-h-screen bg-white">
-                <div className="min-h-screen bg-gradient-to-br bg_base from-slate-50 via-blue-50 to-indigo-50 p-6 pt-20">
+                <div className="min-h-screen bg-gradient-to-br bg_base from-slate-50 via-blue-50 to-indigo-50 pt-4 md:pt-20 pb-6 px-2 md:px-6">
                   <div className="max-w-[1600px] mx-auto space-y-6">
                     <div className="bg-white rounded-3xl p-3 shadow-2xl border-1 border-purple-300">
-                      <div className="flex items-center justify-between">
+                      <div className="profile-header flex items-center justify-between">
                         <div className="flex items-center gap-5">
                           <div className="relative">
                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-500 flex items-center justify-center shadow-xl border-4 border-white overflow-hidden">
-  <svg width="100%" height="100%" viewBox="0 0 100 100">
-    <path d="M0 60 Q25 40, 50 60 T100 60" fill="none" stroke="#c084fc" strokeWidth="14" opacity="0.4"/>
-    <path d="M0 55 Q25 35, 50 55 T100 55" fill="none" stroke="#a78bfa" strokeWidth="10" opacity="0.6"/>
-    <circle cx="28" cy="38" r="3" fill="white"/>
-    <circle cx="72" cy="42" r="2.5" fill="white"/>
-    <circle cx="55" cy="28" r="2" fill="white"/>
-  </svg>
-</div>
+                              <svg width="100%" height="100%" viewBox="0 0 100 100">
+                                <path d="M0 60 Q25 40, 50 60 T100 60" fill="none" stroke="#c084fc" strokeWidth="14" opacity="0.4" />
+                                <path d="M0 55 Q25 35, 50 55 T100 55" fill="none" stroke="#a78bfa" strokeWidth="10" opacity="0.6" />
+                                <circle cx="28" cy="38" r="3" fill="white" />
+                                <circle cx="72" cy="42" r="2.5" fill="white" />
+                                <circle cx="55" cy="28" r="2" fill="white" />
+                              </svg>
+                            </div>
                             <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full p-2 shadow-lg border-3 border-white">
                               <svg className="lucide lucide-crown w-4 h-4 text-white" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z">
@@ -431,7 +431,7 @@ function questionsText(n: number): string {
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="text-center bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl px-6 py-4 border-2 border-blue-300">
+                          <div className="exam-block text-center bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl px-6 py-4 border-2 border-blue-300">
                             <div className="text-xs text-blue-700 mb-1">
                               Екзамен через
                             </div>
@@ -455,7 +455,7 @@ function questionsText(n: number): string {
                         </svg>
                         Щоденні цілі
                       </h3>
-                      <div className="grid grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {/* Тести */}
                         <div className="bg-blue-100 rounded-xl p-4 border-2 border-gray-200 flex items-center gap-4">
                           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
@@ -543,12 +543,12 @@ function questionsText(n: number): string {
                       </div>
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                      <div className="bg-white rounded-3xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_12px_48px_rgba(0,0,0,0.12)]">
+                      <div className="bg-white rounded-3xl p-5 md:p-8 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_12px_48px_rgba(0,0,0,0.12)]">
                         <h3 className="text-2xl font-semibold text-gray-900 mb-1 text-center md:text-left">
                           Розподіл відповідей
                         </h3>
                         {/* Великий графік з постійними проміжками та сильним закругленням */}
-                        <div className="mx-auto  max-w-[480px] bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-inner p-6">
+                        <div className="mx-auto max-w-full md:max-w-[480px] bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-inner p-4 md:p-6">
                           <div className="relative w-full h-280px flex items-center justify-center">
                             <MultiRingProgress
                               size={260}
@@ -1062,93 +1062,7 @@ function questionsText(n: number): string {
                       </div>
                     </div>
 
-<div className="bg-white rounded-2xl p-6 shadow-lg">
-                    <h3 className="text-xl font-bold text-gray-800 mb-6">
-                      Досягнення та нагороди
-                    </h3>
-                    <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-8 gap-4">
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy w-10 h-10 text-amber-500 mb-2">
-                          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                          <path d="M4 22h16" />
-                          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          Перша сотня
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-star w-10 h-10 text-purple-500 mb-2">
-                          <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
-                          </path>
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          Майстер
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-flame w-10 h-10 text-orange-500 mb-2">
-                          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z">
-                          </path>
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          7 днів
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target w-10 h-10 text-green-500 mb-2">
-                          <circle cx="12" cy="12" r="10" />
-                          <circle cx="12" cy="12" r="6" />
-                          <circle cx="12" cy="12" r="2" />
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          90% точність
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-award w-10 h-10 text-blue-500 mb-2">
-                          <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526">
-                          </path>
-                          <circle cx="12" cy="8" r="6" />
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          Топ 50
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gray-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-book w-10 h-10 text-gray-300 mb-2">
-                          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20">
-                          </path>
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          Всі теми
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gray-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar w-10 h-10 text-gray-300 mb-2">
-                          <path d="M8 2v4" />
-                          <path d="M16 2v4" />
-                          <rect width="18" height="18" x="3" y="4" rx="2" />
-                          <path d="M3 10h18" />
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          30 днів
-                        </span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 rounded-xl bg-gray-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up w-10 h-10 text-gray-300 mb-2">
-                          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
-                          <polyline points="16 7 22 7 22 13" />
-                        </svg>
-                        <span className="text-xs text-center text-gray-600">
-                          Експерт
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+<div className="bg-white rounded-2xl p-6 shadow-lg"><h3 className="text-xl font-bold text-gray-800 mb-6">Досягнення та нагороди</h3><div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-8 gap-4"><div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-trophy w-10 h-10 text-amber-500 mb-2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg><span className="text-xs text-center text-gray-600">Перша сотня</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-star w-10 h-10 text-purple-500 mb-2"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path></svg><span className="text-xs text-center text-gray-600">Майстер</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-flame w-10 h-10 text-orange-500 mb-2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg><span className="text-xs text-center text-gray-600">7 днів</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-target w-10 h-10 text-green-500 mb-2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg><span className="text-xs text-center text-gray-600">90% точність</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-award w-10 h-10 text-blue-500 mb-2"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path><circle cx="12" cy="8" r="6"></circle></svg><span className="text-xs text-center text-gray-600">Топ 50</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gray-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-book w-10 h-10 text-gray-300 mb-2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path></svg><span className="text-xs text-center text-gray-600">Всі теми</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gray-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-calendar w-10 h-10 text-gray-300 mb-2"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg><span className="text-xs text-center text-gray-600">30 днів</span></div><div className="flex flex-col items-center p-4 rounded-xl bg-gray-50"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-trending-up w-10 h-10 text-gray-300 mb-2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg><span className="text-xs text-center text-gray-600">Експерт</span></div></div></div>
 
                     <StaticMed></StaticMed>
 

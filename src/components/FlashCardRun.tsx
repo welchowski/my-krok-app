@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { NavLink, useLocation } from 'react-router-dom'
 
+
 type FlashCard = {
   id: number
   question: string

@@ -86,10 +86,10 @@ export default function CardSelection() {
 
   const count = selected.size;
 
-  if (loading) return <div className="text-center py-20 min-h-screen p-6 bg_base">Завантаження...</div>;
+  if (loading) return <div className="text-center py-20 min-h-screen p-6 bg_base ">Завантаження...</div>;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 min-h-screen p-6 bg_base">
+    <div className="max-w-3xl mx-auto px-4 py-8 min-h-screen p-6 bg_base pb-[20rem] !pb-[20rem]">
       <h1 className="text-4xl mb-2" >Вибір теми</h1>
       <p className="text-sm text-gray-500 mb-6">
   {userKrokType || '—'} 
@@ -98,7 +98,7 @@ export default function CardSelection() {
       <div className="w-16 h-0.5 bg-emerald-600 mb-8" />
       <p className="text-sm text-gray-600 mb-8">Оберіть дисципліни</p>
 
-      <div className="space-y-10">
+      <div className="space-y-10pb-64 md:pb-80 lg:pb-96">
         {groups.map(g => {
           const all = g.disciplines.every(d => selected.has(d));
           return (
@@ -169,26 +169,31 @@ export default function CardSelection() {
           );
         })}
       </div>
+      <div className="h-20 md:h-80 lg:h-96"></div>
 
-      <div className="mt-12 flex items-center gap-6 sticky bottom-4  p-4 border rounded-lg shadow-lg z-10">
-        <span className="text-lg text-gray-600">
-          Обрано: <strong className="text-xl text-emerald-600">{count}</strong>
-        </span>
-        <Link
-          to="/dashboard/flash/run"
-          state={{ selectedDisciplines: [...selected],
-            krokType: userKrokType,
-           }}
-          className={`flex-1 text-center py-3 rounded text-white font-medium ${
-            count ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-400 cursor-not-allowed'
-          }`}
-          onClick={e => !count && e.preventDefault()}
-        >
-          Пройти тестування →
-        </Link>
 
-        
-      </div>
+      <div className="
+  fixed bottom-4 inset-x-0 mx-auto
+  w-full max-w-3xl px-4
+  z-50 flex items-center gap-6 justify-center md:justify-end
+  p-4 border rounded-lg shadow-lg
+  bg-white/75 backdrop-blur-lg border-white/30
+">
+  <span className="text-lg text-gray-600">
+    Обрано: <strong className="text-xl text-emerald-600">{count}</strong>
+  </span>
+
+  <Link
+    to="/dashboard/flash/run"
+    state={{ selectedDisciplines: [...selected], krokType: userKrokType }}
+    className={`flex-1 text-center py-3 rounded text-white font-medium ${
+      count ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-400 cursor-not-allowed'
+    }`}
+    onClick={e => !count && e.preventDefault()}
+  >
+    Пройти тестування →
+  </Link>
+</div>
     </div>
   );
 }
