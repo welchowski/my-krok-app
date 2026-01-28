@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import  { useState } from 'react';
+import { useState } from 'react';
 
 import './home-page.css';  // твої стилі залишаються
 import AuthModal from '../../components/AuthModal';
@@ -94,9 +94,9 @@ export default function HomePage() {
                           </span>
                         </div>
                         <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                          Підготуйся до 
+                          Підготуйся до
                           <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
-                             &nbsp;KROK&nbsp;
+                            &nbsp;KROK&nbsp;
                           </span>
                           з нами!
                         </h1>
@@ -1394,7 +1394,7 @@ export default function HomePage() {
                               </div>
                               <button className="w-full text-white px-4 py-2 rounded-lg text-sm hover:bg-black transition-colors duration-300 flex items-center justify-center gap-3 shadow-md" style={{ 'backgroundColor': '#1f2937 !important' }}>
                                 <img alt="App Store" className="h-8" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-                              </button> 
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -2509,7 +2509,7 @@ export default function HomePage() {
                         <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text">
                           &nbsp;плани&nbsp;
                         </span>
-                      </h2> 
+                      </h2>
                       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                         Постійно розвиватися та розширювати можливості
                         нашої платформи
@@ -3160,7 +3160,7 @@ export default function HomePage() {
                         </a>
                       </div>
                     </div>
-                    
+
 
                     <div>
                       <h3 className="font-bold mb-4">
@@ -3226,11 +3226,11 @@ export default function HomePage() {
                   <div className="pt-4 border-t border-gray-200">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                       <p className="text-gray-600 text-sm">
-                       
+
                       </p>
                       <div className="flex gap-6 text-sm">
                         <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
-                           © 2026 KROK Platform. Всі права захищено.
+                          © 2026 KROK Platform. Всі права захищено.
                         </a>
                         <a className="text-gray-600 hover:text-blue-600 transition-colors" href="#">
                           Політика конфіденційності
@@ -3256,7 +3256,7 @@ export default function HomePage() {
         defaultMode={mode}
       />
     </div>
-  
+
 
 
 

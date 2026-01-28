@@ -5649,29 +5649,29 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 @layer utilities {
-  .bg-clip-text {
-    @apply bg-clip-text text-transparent;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-box-decoration-break: clone !important;
-    box-decoration-break: clone !important;
-    -webkit-text-fill-color: transparent;
-    /* Самое важное для iOS/Safari */
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-  }
+    .bg-clip-text {
+        @apply bg-clip-text text-transparent;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-box-decoration-break: clone !important;
+        box-decoration-break: clone !important;
+        -webkit-text-fill-color: transparent;
+        /* Самое важное для iOS/Safari */
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
 }
 
 
 
 span[class*="bg-clip-text"] {
-  display: inline-block !important;
-  -webkit-box-decoration-break: clone !important;
-  box-decoration-break: clone !important;
+    display: inline-block !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
 }
 
 span[class*="bg-clip-text"]::before,
 span[class*="bg-clip-text"]::after {
-  content: "\200B";
-  font-size: 0;
+    content: "\200B";
+    font-size: 0;
 }
