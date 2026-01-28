@@ -8,10 +8,12 @@ export default function HomePage() {
   useAuth({ requireAuth: false });
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const openAuth = (wantedMode: 'login' | 'register') => {
     setMode(wantedMode);
     setModalOpen(true);
+    setIsMenuOpen(false); // Close menu when opening auth
   };
 
   return (
@@ -63,18 +65,53 @@ export default function HomePage() {
                         </button>
                       </div>
 
-                      <button className="md:hidden p-2">
-                        <svg className="lucide lucide-menu w-6 h-6" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                          <line x1="4" x2="20" y1="12" y2="12">
-                          </line>
-                          <line x1="4" x2="20" y1="6" y2="6">
-                          </line>
-                          <line x1="4" x2="20" y1="18" y2="18">
-                          </line>
-                        </svg>
+                      <button className="md:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        {isMenuOpen ? (
+                          <svg className="lucide lucide-x w-6 h-6" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="18" x2="6" y1="6" y2="18"></line>
+                            <line x1="6" x2="18" y1="6" y2="18"></line>
+                          </svg>
+                        ) : (
+                          <svg className="lucide lucide-menu w-6 h-6" fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="4" x2="20" y1="12" y2="12"></line>
+                            <line x1="4" x2="20" y1="6" y2="6"></line>
+                            <line x1="4" x2="20" y1="18" y2="18"></line>
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </div>
+
+                  {/* Mobile Menu */}
+                  {isMenuOpen && (
+                    <div className="md:hidden bg-white border-t border-gray-100 shadow-xl animate-in slide-in-from-top duration-300">
+                      <div className="px-4 pt-2 pb-6 space-y-1">
+                        <a className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" href="#hero" onClick={() => setIsMenuOpen(false)}>
+                          Головна
+                        </a>
+                        <a className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" href="#advantages" onClick={() => setIsMenuOpen(false)}>
+                          Переваги
+                        </a>
+                        <a className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" href="#learning" onClick={() => setIsMenuOpen(false)}>
+                          Функції
+                        </a>
+                        <a className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" href="#pricing" onClick={() => setIsMenuOpen(false)}>
+                          Тарифи
+                        </a>
+                        <a className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" href="#contact" onClick={() => setIsMenuOpen(false)}>
+                          Контакти
+                        </a>
+                        <div className="pt-4 flex flex-col gap-3">
+                          <button className="w-full px-4 py-3 text-center font-medium text-gray-700 hover:text-blue-600 border border-gray-200 rounded-lg transition-all" onClick={() => openAuth('login')}>
+                            Вхід
+                          </button>
+                          <button className="w-full px-4 py-3 text-center font-medium text-white bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-md transition-all" onClick={() => openAuth('register')}>
+                            Почати навчання
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </header>
               <main>
